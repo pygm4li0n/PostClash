@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PostClash — Every post has a rival.</title>
+<meta name="theme-color" content="#080A09" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#080A09;
+  --panel:#111411;
+  --panel-2:#0D100D;
+  --panel-3:#161B16;
+  --border:#1E241E;
+  --border-hi:#2F382F;
+  --accent:#39FF14;
+  --violet:#9B5CFF;
+  --text:#E8F0E8;
+  --muted:#8A968A;
+  --dim:#5A635A;
+  --danger:#FF3B5C;
+  --warn:#FFB020;
+  --r:8px; --r-lg:12px;
+  --ff:'Space Grotesk',system-ui,sans-serif;
+  --fm:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--ff);font-size:15px;
+  line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{max-width:100%;display:block}
+.mono{font-family:var(--fm)}
+code{font-family:var(--fm);font-size:12.5px}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#1D241D;border-radius:20px}
+
+.boot{position:fixed;inset:0;z-index:9999;background:var(--bg);
+  display:grid;place-content:center;justify-items:center;gap:20px;
+  transition:opacity .4s ease}
+.boot.gone{opacity:0;pointer-events:none}
+.boot-brand{display:flex;align-items:center;gap:10px}
+.boot-bar{width:200px;height:2px;background:#1A201A;overflow:hidden;border-radius:2px}
+.boot-bar i{display:block;height:100%;width:40%;background:var(--accent);
+  animation:slide 1.2s ease-in-out infinite}
+@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
+.boot-note{font-size:12px;color:var(--dim);font-family:var(--fm);letter-spacing:.06em;
+  text-align:center;max-width:400px}
+
+.brand{display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;border-radius:8px;display:grid;place-content:center;
+  background:var(--accent);color:#04120A;font-weight:700;font-size:13px;letter-spacing:-.04em}
+.logo-word{font-weight:700;font-size:16px;letter-spacing:.02em}
+.logo-word em{font-style:normal;color:var(--accent)}
+.brand-sm .logo-mark{width:28px;height:28px;font-size:11px}
+.brand-sm .logo-word{font-size:14px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 18px;border-radius:var(--r);font-weight:600;font-size:14px;
+  border:1px solid transparent;transition:background .15s,border-color .15s,color .15s}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#04120A}
+.btn-primary:hover:not(:disabled){background:#4EFF2A}
+.btn-outline{border-color:var(--border-hi);color:var(--text)}
+.btn-outline:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn-ghost{color:var(--muted)}
+.btn-ghost:hover{color:var(--text);background:var(--panel-3)}
+.btn-violet{background:var(--violet);color:#0B0616}
+.btn-violet:hover:not(:disabled){background:#AE75FF}
+.btn-danger{border:1px solid var(--danger);color:var(--danger)}
+.btn-danger:hover{background:rgba(255,59,92,.1)}
+.btn-lg{padding:13px 26px;font-size:15px}
+.btn-sm{padding:7px 13px;font-size:13px}
+.btn-block{width:100%}
+.icon-btn{width:36px;height:36px;border-radius:var(--r);display:grid;place-content:center;
+  font-size:16px;color:var(--muted);border:1px solid var(--border)}
+.icon-btn:hover{color:var(--text);border-color:var(--border-hi)}
+
+.landing{min-height:100vh;display:flex;flex-direction:column}
+.landing-nav{display:flex;align-items:center;justify-content:space-between;
+  padding:18px clamp(20px,5vw,64px);border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--bg);z-index:20}
+.landing-links{display:flex;align-items:center;gap:24px;font-size:14px;color:var(--muted)}
+.landing-links a:hover{color:var(--accent)}
+.hero{padding:clamp(60px,10vw,120px) clamp(20px,5vw,64px) clamp(50px,7vw,80px);max-width:1100px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;
+  font-family:var(--fm);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+  border:1px solid rgba(57,255,20,.3);padding:5px 12px;border-radius:100px;margin-bottom:24px}
+.hero-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.hero-title{font-size:clamp(44px,8vw,88px);line-height:.98;font-weight:700;
+  letter-spacing:-.035em;margin-bottom:22px}
+.hero-title em{font-style:normal;color:var(--accent)}
+.hero-sub{max-width:560px;color:var(--muted);font-size:clamp(15px,1.6vw,17px);margin-bottom:34px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:60px}
+.hero-stats{display:flex;gap:clamp(28px,5vw,64px);flex-wrap:wrap}
+.hero-stats b{display:block;font-size:clamp(26px,3.6vw,40px);font-weight:700;
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.hero-stats span{font-size:11px;color:var(--dim);text-transform:uppercase;
+  letter-spacing:.12em;font-family:var(--fm)}
+.section{padding:clamp(50px,7vw,90px) clamp(20px,5vw,64px);border-top:1px solid var(--border)}
+.section h2{font-size:clamp(24px,3.2vw,34px);letter-spacing:-.025em;margin-bottom:10px}
+.section-sub{color:var(--muted);max-width:620px;margin-bottom:36px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.steps article{background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r);padding:24px 20px}
+.steps span{font-family:var(--fm);font-size:12px;color:var(--accent);letter-spacing:.1em}
+.steps h3{font-size:15px;margin:12px 0 6px}
+.steps p{font-size:13.5px;color:var(--muted)}
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.tier{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;position:relative;overflow:hidden}
+.tier::after{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:var(--tc)}
+.tier h4{font-size:14px;margin-bottom:2px}
+.tier .req{font-family:var(--fm);font-size:12px;color:var(--muted);margin-bottom:12px}
+.tier .mult{font-size:26px;font-weight:700;color:var(--tc)}
+.tier .mult small{font-size:11px;color:var(--dim);font-weight:400}
+.landing-footer{margin-top:auto;padding:26px clamp(20px,5vw,64px);
+  border-top:1px solid var(--border);display:flex;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
+
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+.sidebar{background:var(--panel-2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:20px 14px;gap:24px;
+  position:sticky;top:0;height:100vh}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);
+  color:var(--muted);font-size:14px;font-weight:500;transition:background .15s,color .15s}
+.nav a span:first-child{font-size:13px;width:16px;text-align:center;opacity:.75}
+.nav a:hover{background:var(--panel-3);color:var(--text)}
+.nav a.active{background:rgba(57,255,20,.08);color:var(--accent)}
+.sidebar-foot{margin-top:auto;font-size:11px;color:var(--dim);text-align:center;font-family:var(--fm)}
+.main{display:flex;flex-direction:column;min-width:0}
+.topbar{height:60px;display:flex;align-items:center;gap:14px;padding:0 20px;
+  border-bottom:1px solid var(--border);background:var(--bg);
+  position:sticky;top:0;z-index:15}
+.topbar-title{font-weight:600;font-size:15px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;
+  border-radius:100px;border:1px solid var(--border);font-size:12.5px;
+  color:var(--muted);transition:.15s}
+.chip:hover{border-color:var(--border-hi);color:var(--text)}
+.chip b{color:var(--text);font-family:var(--fm)}
+.chip span:first-child{font-family:var(--fm);font-size:10px;letter-spacing:.1em;color:var(--dim)}
+.tier-dot{width:7px;height:7px;border-radius:50%;background:var(--dim);display:inline-block}
+.wallet-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;
+  border-radius:100px;border:1px solid var(--border-hi);font-size:12.5px;transition:.15s}
+.wallet-pill:hover{border-color:var(--accent);color:var(--accent)}
+.wallet-pill.connected{border-color:rgba(57,255,20,.4);color:var(--accent)}
+.wp-dot{width:7px;height:7px;border-radius:50%;background:var(--dim)}
+.wallet-pill.connected .wp-dot{background:var(--accent)}
+.avatar{width:34px;height:34px;border-radius:50%;border:1px solid var(--border-hi);
+  display:grid;place-content:center;font-size:13px;font-weight:600;color:var(--muted);
+  overflow:hidden;background:var(--panel-3);transition:.15s}
+.avatar:hover{border-color:var(--accent)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.view{padding:26px clamp(16px,3vw,32px) 90px;flex:1;max-width:1400px;width:100%}
+.mobile-nav{display:none}
+
+.view-head{margin-bottom:24px}
+.view-head h1{font-size:clamp(22px,3vw,30px);letter-spacing:-.025em;margin-bottom:4px}
+.view-head p{color:var(--muted);font-size:14px;max-width:660px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.panel + .panel{margin-top:14px}
+.panel h3{font-size:15px;margin-bottom:12px}
+.empty{text-align:center;padding:56px 24px;border:1px dashed var(--border);
+  border-radius:var(--r);color:var(--muted)}
+.empty .ico{font-size:30px;opacity:.4;margin-bottom:10px}
+.empty h3{color:var(--text);font-size:16px;margin-bottom:6px}
+.empty p{font-size:13.5px;max-width:420px;margin:0 auto 18px}
+
+.battle{background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden}
+.battle + .battle{margin-top:14px}
+.battle-head{display:flex;align-items:center;gap:12px;padding:12px 18px;
+  border-bottom:1px solid var(--border);background:var(--panel-2)}
+.status{font-family:var(--fm);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 10px;border-radius:100px;border:1px solid}
+.status.live{color:var(--accent);border-color:rgba(57,255,20,.35);background:rgba(57,255,20,.07)}
+.status.live::before{content:'●';margin-right:6px}
+.status.ending{color:var(--warn);border-color:rgba(255,176,32,.35);background:rgba(255,176,32,.07)}
+.status.finished{color:var(--dim);border-color:var(--border-hi);background:var(--panel-3)}
+.battle-timer{margin-left:auto;font-family:var(--fm);font-size:13px;color:var(--muted)}
+.battle-timer b{color:var(--text)}
+.arena{display:grid;grid-template-columns:1fr auto 1fr}
+.arena-vs{display:grid;place-content:center;padding:0 16px;
+  font-family:var(--fm);font-size:13px;font-weight:600;color:var(--dim);letter-spacing:.1em}
+.side{padding:20px;display:flex;flex-direction:column;gap:14px;position:relative}
+.side.winner{background:rgba(57,255,20,.05)}
+.side.winner::after{content:'WINNER';position:absolute;top:14px;right:14px;
+  font-family:var(--fm);font-size:10px;letter-spacing:.14em;color:var(--accent);
+  border:1px solid rgba(57,255,20,.4);padding:3px 8px;border-radius:100px}
+.side-author{display:flex;align-items:center;gap:10px}
+.side-av{width:36px;height:36px;border-radius:50%;background:var(--panel-3);flex:none;
+  display:grid;place-content:center;font-weight:600;font-size:13px;color:var(--muted);
+  border:1px solid var(--border)}
+.side-name{font-size:13.5px;font-weight:600;line-height:1.2}
+.side-handle{font-size:12px;color:var(--dim);font-family:var(--fm)}
+.side-text{font-size:14px;color:var(--text);line-height:1.5;flex:1;
+  display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.side-link{font-size:11.5px;color:var(--dim);font-family:var(--fm)}
+.side-link:hover{color:var(--accent)}
+.votebar{height:6px;border-radius:100px;background:var(--panel-3);overflow:hidden;
+  display:flex;margin:0 18px 16px}
+.votebar i{display:block;height:100%;transition:width .4s ease}
+.vb-a{background:var(--accent)}
+.vb-b{background:var(--violet)}
+.vote-stats{display:flex;justify-content:space-between;font-size:12.5px;
+  font-family:var(--fm);color:var(--muted);font-variant-numeric:tabular-nums}
+.vote-stats b{color:var(--text)}
+.vote-btn{flex:1;padding:11px;border-radius:var(--r);border:1px solid var(--border-hi);
+  font-weight:600;font-size:13.5px;color:var(--text);transition:.15s;min-width:120px}
+.vote-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.vote-btn.b:hover:not(:disabled){border-color:var(--violet);color:var(--violet)}
+.vote-btn:disabled{opacity:.45;cursor:not-allowed}
+.vote-btn.voted{background:rgba(57,255,20,.12);border-color:var(--accent);color:var(--accent)}
+.vote-btn.voted.b{background:rgba(155,92,255,.12);border-color:var(--violet);color:var(--violet)}
+.react-row{display:flex;gap:6px;padding:0 18px 14px;flex-wrap:wrap}
+.react{padding:6px 11px;border-radius:100px;border:1px solid var(--border);font-size:12px;
+  color:var(--muted);transition:.15s;font-family:var(--fm)}
+.react:hover{border-color:var(--border-hi);color:var(--text)}
+.react.on{border-color:var(--accent);color:var(--accent);background:rgba(57,255,20,.07)}
+.battle-foot{display:flex;align-items:center;gap:12px;padding:12px 18px;
+  border-top:1px solid var(--border);background:var(--panel-2);font-size:12px;
+  color:var(--dim);font-family:var(--fm)}
+
+.row{display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border:1px solid var(--border);border-radius:var(--r);background:var(--panel)}
+.row + .row{margin-top:8px}
+.row-rank{width:32px;height:32px;border-radius:var(--r);display:grid;place-content:center;
+  font-family:var(--fm);font-weight:600;font-size:13px;background:var(--panel-3);
+  color:var(--muted);flex:none}
+.row-rank.top{background:rgba(57,255,20,.1);color:var(--accent);border:1px solid rgba(57,255,20,.3)}
+.row-main{flex:1;min-width:0}
+.row-name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
+.row-sub{font-size:12.5px;color:var(--dim);font-family:var(--fm)}
+.row-val{font-family:var(--fm);font-weight:600;font-size:14px}
+.badge{font-size:10.5px;font-family:var(--fm);letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:100px;border:1px solid var(--border-hi);color:var(--muted)}
+.badge.accent{color:var(--accent);border-color:rgba(57,255,20,.35);background:rgba(57,255,20,.06)}
+.badge.violet{color:var(--violet);border-color:rgba(155,92,255,.35);background:rgba(155,92,255,.06)}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;
+  text-transform:uppercase;letter-spacing:.09em;font-family:var(--fm)}
+.input{width:100%;padding:11px 14px;border-radius:var(--r);border:1px solid var(--border);
+  background:var(--panel-2);color:var(--text);font-size:14px;font-family:inherit;transition:.15s}
+.input:focus{outline:none;border-color:var(--accent)}
+.input.err{border-color:var(--danger)}
+.hint{font-size:12px;color:var(--dim);margin-top:6px}
+.hint.err{color:var(--danger)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-bottom:20px}
+.stat{background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px 18px}
+.stat b{display:block;font-size:24px;font-weight:700;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;margin-bottom:2px}
+.stat span{font-size:11px;color:var(--dim);text-transform:uppercase;
+  letter-spacing:.1em;font-family:var(--fm)}
+
+.quest{display:flex;gap:16px;align-items:center;padding:16px;
+  border:1px solid var(--border);border-radius:var(--r);background:var(--panel)}
+.quest + .quest{margin-top:10px}
+.quest.done{border-color:rgba(57,255,20,.3);background:rgba(57,255,20,.03)}
+.quest-ico{width:42px;height:42px;border-radius:var(--r);display:grid;place-content:center;
+  background:var(--panel-3);font-size:18px;flex:none}
+.quest-main{flex:1;min-width:0}
+.quest-main h4{font-size:14px;margin-bottom:2px}
+.quest-main p{font-size:12.5px;color:var(--muted)}
+.progress{height:5px;border-radius:100px;background:var(--panel-3);overflow:hidden;margin-top:8px}
+.progress i{display:block;height:100%;background:var(--accent);
+  border-radius:100px;transition:width .5s ease}
+.quest-xp{font-family:var(--fm);font-size:13px;color:var(--accent);
+  font-weight:600;white-space:nowrap}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.ach{text-align:center;padding:18px 12px;border:1px solid var(--border);
+  border-radius:var(--r);background:var(--panel);opacity:.4;transition:.2s}
+.ach.on{opacity:1;border-color:rgba(57,255,20,.3);background:rgba(57,255,20,.03)}
+.ach-ico{font-size:24px;margin-bottom:8px}
+.ach h4{font-size:12.5px;margin-bottom:2px}
+.ach p{font-size:11px;color:var(--dim)}
+
+.profile-head{display:flex;gap:22px;align-items:center;flex-wrap:wrap;
+  padding:24px;border:1px solid var(--border);border-radius:var(--r-lg);
+  background:var(--panel);margin-bottom:18px}
+.p-avatar{width:72px;height:72px;border-radius:50%;
+  border:2px solid var(--border-hi);display:grid;place-content:center;
+  font-size:24px;font-weight:700;color:var(--accent);
+  background:var(--panel-3);flex:none}
+.p-info{flex:1;min-width:200px}
+.p-info h1{font-size:22px;letter-spacing:-.025em;margin-bottom:4px}
+.p-info .p-handle{font-family:var(--fm);font-size:13px;color:var(--dim);margin-bottom:10px}
+.p-tags{display:flex;gap:8px;flex-wrap:wrap}
+
+.modal-root{position:fixed;inset:0;z-index:200;display:grid;place-items:center;
+  background:rgba(4,6,4,.85);padding:20px}
+.modal{background:var(--panel);border:1px solid var(--border-hi);
+  border-radius:var(--r-lg);width:min(520px,100%);max-height:86vh;overflow:auto}
+.modal-head{display:flex;align-items:center;gap:12px;padding:16px 20px;
+  border-bottom:1px solid var(--border)}
+.modal-head h3{font-size:16px;flex:1}
+.modal-body{padding:20px}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;
+  border-top:1px solid var(--border)}
+
+.toast-root{position:fixed;bottom:20px;right:20px;z-index:300;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--panel-3);border:1px solid var(--border-hi);
+  border-left:3px solid var(--accent);border-radius:var(--r);
+  padding:12px 16px;font-size:13.5px;max-width:340px;
+  pointer-events:auto;animation:in .2s ease}
+.toast.err{border-left-color:var(--danger)}
+.toast.warn{border-left-color:var(--warn)}
+@keyframes in{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
+
+.only-mobile{display:none}
+@media (max-width:980px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;z-index:100;
+    transform:translateX(-100%);transition:transform .25s ease}
+  .sidebar.open{transform:none}
+  .only-mobile{display:grid}
+  .topbar{padding:0 14px}
+  .view{padding:20px 14px 90px}
+  .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:90;
+    background:var(--panel-2);border-top:1px solid var(--border);padding:8px 4px}
+  .mobile-nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:10px;color:var(--dim);padding:5px 2px}
+  .mobile-nav a span{font-size:15px}
+  .mobile-nav a.active{color:var(--accent)}
+  .chip{display:none}
+  .arena{grid-template-columns:1fr}
+  .arena-vs{padding:12px 0;border-top:1px solid var(--border);
+    border-bottom:1px solid var(--border)}
+  .toast-root{left:14px;right:14px;bottom:80px}
+  .landing-links a{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- BOOT -->
+<div id="boot" class="boot">
+  <div class="boot-brand">
+    <span class="logo-mark">PC</span>
+    <span class="logo-word">POST<em>CLASH</em></span>
+  </div>
+  <div class="boot-bar"><i></i></div>
+  <p id="boot-note" class="boot-note">Connecting…</p>
+</div>
+
+<!-- LANDING -->
+<section id="landing" class="landing" hidden>
+  <header class="landing-nav">
+    <div class="brand">
+      <span class="logo-mark">PC</span>
+      <span class="logo-word">POST<em>CLASH</em></span>
+    </div>
+    <nav class="landing-links">
+      <a href="#how">How it works</a>
+      <a href="#tiers">Tiers</a>
+      <button class="btn btn-primary" data-action="enter-app">Enter Arena</button>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-eyebrow"><span class="dot"></span> Live on Solana</div>
+    <h1 class="hero-title">Every post<br />has a <em>rival.</em></h1>
+    <p class="hero-sub">
+      Submit a public X post. Challenge another. Let the community decide which one wins.
+      No wagers — just XP, reputation and the leaderboard.
+    </p>
+    <div class="hero-actions">
+      <button class="btn btn-primary btn-lg" data-action="enter-app">Enter the Arena</button>
+      <a class="btn btn-outline btn-lg" href="#how">How it works</a>
+    </div>
+    <div class="hero-stats">
+      <div><b id="hs-battles">—</b><span>Live battles</span></div>
+      <div><b id="hs-votes">—</b><span>Votes cast</span></div>
+      <div><b id="hs-users">—</b><span>Clashers</span></div>
+    </div>
+  </div>
+
+  <section class="section" id="how">
+    <h2>How it works</h2>
+    <div class="steps">
+      <article><span>01</span><h3>Connect Phantom</h3><p>Sign a one-time nonce. Ownership verified server-side.</p></article>
+      <article><span>02</span><h3>Link your X</h3><p>OAuth 2.0. We only store your handle.</p></article>
+      <article><span>03</span><h3>Submit a post</h3><p>Paste a public X URL. Format validated.</p></article>
+      <article><span>04</span><h3>Clash</h3><p>Two posts enter. The community votes. Backend settles.</p></article>
+    </div>
+  </section>
+
+  <section class="section" id="tiers">
+    <h2>Holder tiers</h2>
+    <p class="section-sub">Hold the PostClash token to unlock XP multipliers.</p>
+    <div class="tiers" id="landing-tiers"></div>
+  </section>
+
+  <footer class="landing-footer">
+    <span>POSTCLASH © <span id="yr"></span></span>
+    <span class="mono">Solana · Supabase</span>
+  </footer>
+</section>
+
+<!-- APP -->
+<div id="app" class="app" hidden>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand brand-sm">
+      <span class="logo-mark">PC</span>
+      <span class="logo-word">POST<em>CLASH</em></span>
+    </div>
+    <nav class="nav">
+      <a href="#/arena"       data-nav="arena"><span>◈</span>Arena</a>
+      <a href="#/discover"    data-nav="discover"><span>◇</span>Discover</a>
+      <a href="#/predictions" data-nav="predictions"><span>◎</span>Predictions</a>
+      <a href="#/leaderboard" data-nav="leaderboard"><span>▲</span>Leaderboard</a>
+      <a href="#/quests"      data-nav="quests"><span>✦</span>Quests</a>
+      <a href="#/profile"     data-nav="profile"><span>●</span>Profile</a>
+      <a href="#/settings"    data-nav="settings"><span>⚙</span>Settings</a>
+    </nav>
+    <div class="sidebar-foot">v1.0</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn only-mobile" id="btn-menu" aria-label="Menu">☰</button>
+      <div class="topbar-title" id="view-title">Arena</div>
+      <div class="topbar-right">
+        <button class="chip" data-action="go" data-href="#/quests">
+          <span>XP</span><b id="xp-value">0</b>
+        </button>
+        <button class="chip" data-action="go" data-href="#/settings">
+          <span class="tier-dot" id="tier-dot"></span><b id="tier-value">Unranked</b>
+        </button>
+        <button class="wallet-pill" id="wallet-pill" data-action="wallet-toggle">
+          <span class="wp-dot" id="wp-dot"></span>
+          <span class="mono" id="wp-addr">Connect</span>
+        </button>
+        <button class="avatar" data-action="go" data-href="#/profile" aria-label="Profile">
+          <img id="avatar-img" alt="" hidden />
+          <span id="avatar-fallback">?</span>
+        </button>
+      </div>
+    </header>
+    <main class="view" id="view"></main>
+  </div>
+
+  <nav class="mobile-nav">
+    <a href="#/arena"       data-nav="arena"><span>◈</span>Arena</a>
+    <a href="#/discover"    data-nav="discover"><span>◇</span>Discover</a>
+    <a href="#/predictions" data-nav="predictions"><span>◎</span>Predict</a>
+    <a href="#/leaderboard" data-nav="leaderboard"><span>▲</span>Ranks</a>
+    <a href="#/profile"     data-nav="profile"><span>●</span>Profile</a>
+  </nav>
+</div>
+
+<div id="modal" class="modal-root" hidden></div>
+<div id="toasts" class="toast-root"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   POSTCLASH — APP
+   ═══════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  /* ─────────────────────────────────────────────────────────
+     PASTE YOUR TWO SUPABASE VALUES HERE
+     From: Supabase Dashboard → Settings → API
+     ───────────────────────────────────────────────────────── */
+  const CONFIG = {
+    SUPABASE_URL:      'https://duclhzypwkuiopuaakdm.supabase.co',
+    SUPABASE_ANON_KEY: 'sb_publishable_rSNMqsw6_FtNOtoRZQ2obw_JWIJrfHI',
+
+    SOLANA_RPC_URL:    'https://api.mainnet-beta.solana.com',
+    TOKEN_MINT:        '',
+    TOKEN_DECIMALS:    6,
+    ENDING_SOON_SECONDS: 300,
+    XP: { VOTE: 5, PREDICT: 10, CORRECT_PREDICTION: 50, SUBMIT_POST: 25 },
+  };
+  /* ───────────────────────────────────────────────────────── */
+
+  const IS_CONFIGURED = Boolean(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
+
+  const $  = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  const short = a => a ? a.slice(0,4) + '…' + a.slice(-4) : '';
+  const fmt = n => new Intl.NumberFormat('en', { notation: n > 9999 ? 'compact' : 'standard' }).format(n || 0);
+  const countdown = ms => {
+    if (ms <= 0) return '00:00:00';
+    const t = Math.floor(ms / 1000);
+    return [Math.floor(t/3600), Math.floor((t%3600)/60), t%60]
+      .map(x => String(x).padStart(2, '0')).join(':');
+  };
+  const LS = {
+    get(k, d) { try { return JSON.parse(localStorage.getItem('pc_' + k)) ?? d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem('pc_' + k, JSON.stringify(v)); } catch {} },
+  };
+
+  const State = {
+    sb: null,
+    wallet: null,
+    battles: [],
+    votes: LS.get('votes', {}),
+    predictions: LS.get('preds', {}),
+    profile: null,
+  };
+
+  function initSupabase() {
+    if (!IS_CONFIGURED) return null;
+    if (!window.supabase || !window.supabase.createClient) return null;
+    try {
+      return window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true },
+        realtime: { params: { eventsPerSecond: 8 } },
+      });
+    } catch (e) { console.error('[PostClash]', e); return null; }
+  }
+
+  function toast(msg, type) {
+    const el = document.createElement('div');
+    el.className = 'toast ' + (type || '');
+    el.textContent = msg;
+    $('#toasts').appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 200); }, 3200);
+  }
+
+  function modal({ title, body, actions }) {
+    actions = actions || [];
+    const root = $('#modal');
+    root.hidden = false;
+    root.innerHTML =
+      '<div class="modal" role="dialog">' +
+        '<div class="modal-head"><h3>' + esc(title) + '</h3>' +
+          '<button class="icon-btn" data-close>✕</button></div>' +
+        '<div class="modal-body">' + body + '</div>' +
+        (actions.length ? '<div class="modal-foot">' +
+          actions.map((a, i) => '<button class="btn ' + (a.cls || 'btn-ghost') + '" data-mact="' + i + '">' + esc(a.label) + '</button>').join('') +
+        '</div>' : '') +
+      '</div>';
+    const close = () => { root.hidden = true; root.innerHTML = ''; };
+    root.querySelector('[data-close]').onclick = close;
+    root.onclick = e => { if (e.target === root) close(); };
+    actions.forEach((a, i) => {
+      const b = root.querySelector('[data-mact="' + i + '"]');
+      if (b) b.onclick = () => { a.onClick && a.onClick(); if (a.autoClose !== false) close(); };
+    });
+  }
+
+  /* ── Data (Supabase only) ────────────────────────────────── */
+  async function loadBattles() {
+    if (!State.sb) return [];
+    const { data, error } = await State.sb
+      .from('battles')
+      .select('id, status, starts_at, ends_at, winner, ' +
+              'entry_a:battle_entries!inner(id, side, post:posts(*)), ' +
+              'entry_b:battle_entries!inner(id, side, post:posts(*))')
+      .in('status', ['scheduled','live','finalized'])
+      .order('ends_at', { ascending: true }).limit(40);
+    if (error) { toast('Load failed: ' + error.message, 'err'); return []; }
+
+    const ids = (data || []).map(b => b.id);
+    const counts = {};
+    if (ids.length) {
+      const { data: v } = await State.sb.from('votes').select('battle_id,entry_id').in('battle_id', ids);
+      (v || []).forEach(r => {
+        counts[r.battle_id] = counts[r.battle_id] || {};
+        counts[r.battle_id][r.entry_id] = (counts[r.battle_id][r.entry_id] || 0) + 1;
+      });
+    }
+    State.battles = (data || []).map(b => {
+      const ea = (b.entry_a || []).find(x => x.side === 'a') || (b.entry_a || [])[0];
+      const eb = (b.entry_b || []).find(x => x.side === 'b') || (b.entry_b || [])[0];
+      const c = counts[b.id] || {};
+      return {
+        id: b.id, status: b.status, starts_at: b.starts_at, ends_at: b.ends_at, winner: b.winner,
+        entry_a: { id: ea && ea.id, post: ea && ea.post },
+        entry_b: { id: eb && eb.id, post: eb && eb.post },
+        votes_a: c[ea && ea.id] || 0,
+        votes_b: c[eb && eb.id] || 0,
+      };
+    });
+    return State.battles;
+  }
+
+  async function loadLeaderboard() {
+    if (!State.sb) return [];
+    const { data } = await State.sb.from('profiles')
+      .select('handle, xp, wins, streak, avatar_url')
+      .order('xp', { ascending: false }).limit(50);
+    return (data || []).map((r, i) => Object.assign({ rank: i+1 }, r));
+  }
+
+  async function loadTiers() {
+    if (!State.sb) return [];
+    const { data } = await State.sb.from('token_tiers').select('*').order('min_amount');
+    return (data || []).map(t => ({
+      name: t.name, req: t.min_amount, mult: t.xp_multiplier, color: t.color || '#39FF14',
+    }));
+  }
+
+  async function castVote(battleId, entryId) {
+    const { error } = await State.sb.from('votes').insert({ battle_id: battleId, entry_id: entryId });
+    if (error) throw error;
+    State.votes[battleId] = entryId;
+    LS.set('votes', State.votes);
+  }
+
+  async function castPrediction(battleId, entryId) {
+    const { error } = await State.sb.from('predictions').insert({ battle_id: battleId, entry_id: entryId });
+    if (error) throw error;
+    State.predictions[battleId] = entryId;
+    LS.set('preds', State.predictions);
+  }
+
+  function subscribeRealtime() {
+    if (!State.sb) return;
+    State.sb.channel('pc')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'votes' }, p => {
+        const b = State.battles.find(x => x.id === p.new.battle_id);
+        if (!b) return;
+        if (b.entry_a && b.entry_a.id === p.new.entry_id) b.votes_a++;
+        else if (b.entry_b && b.entry_b.id === p.new.entry_id) b.votes_b++;
+        patchBattle(b);
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'battles' }, p => {
+        const b = State.battles.find(x => x.id === p.new.id);
+        if (b) { b.status = p.new.status; b.winner = p.new.winner; patchBattle(b); }
+      })
+      .subscribe();
+  }
+
+  const Wallet = {
+    provider() {
+      return window.phantom?.solana?.isPhantom ? window.phantom.solana
+           : window.solana?.isPhantom ? window.solana : null;
+    },
+    available() { return !!this.provider(); },
+
+    async connect() {
+      const p = this.provider();
+      if (!p) {
+        modal({
+          title: 'Phantom not detected',
+          body: '<p style="color:var(--muted);font-size:14px;margin-bottom:14px">Install the Phantom browser extension to connect.</p><a class="btn btn-primary" href="https://phantom.app/" target="_blank" rel="noopener">Get Phantom</a>',
+          actions: [],
+        });
+        return;
+      }
+      try {
+        const res = await p.connect();
+        const address = res.publicKey.toString();
+        State.wallet = { address, verified: false, tier: 'Unranked', balance: 0 };
+        LS.set('wallet', address);
+        renderTopbar();
+        await this.verify(address, p);
+      } catch (e) {
+        if (e && e.code === 4001) toast('Connection rejected', 'warn');
+        else toast('Wallet error: ' + (e && e.message || 'unknown'), 'err');
+      }
+    },
+
+    async verify(address, provider) {
+      try {
+        const r1 = await fetch(CONFIG.SUPABASE_URL + '/functions/v1/wallet-nonce', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address }),
+        });
+        if (!r1.ok) throw new Error('nonce request failed');
+        const j1 = await r1.json();
+        const signed = await provider.signMessage(new TextEncoder().encode(j1.message), 'utf8');
+        const sigB64 = btoa(String.fromCharCode.apply(null, signed.signature));
+        const r2 = await fetch(CONFIG.SUPABASE_URL + '/functions/v1/wallet-verify', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address, nonce: j1.nonce, signature: sigB64 }),
+        });
+        if (!r2.ok) throw new Error('verification failed');
+        const v = await r2.json();
+        State.wallet.verified = true;
+        State.wallet.balance = v.balance || 0;
+        State.wallet.tier = v.tier || 'Unranked';
+        renderTopbar();
+        toast('Verified · ' + v.tier + ' tier');
+      } catch (e) {
+        State.wallet.verified = false;
+        toast('Wallet connected — signature verification unavailable', 'warn');
+        renderTopbar();
+      }
+    },
+
+    disconnect() {
+      try { this.provider() && this.provider().disconnect(); } catch (e) {}
+      State.wallet = null;
+      LS.set('wallet', null);
+      renderTopbar();
+      toast('Wallet disconnected');
+    },
+
+    async autoReconnect() {
+      const saved = LS.get('wallet', null);
+      const p = this.provider();
+      if (!saved || !p) return;
+      try {
+        const res = await p.connect({ onlyIfTrusted: true });
+        const address = res.publicKey.toString();
+        if (address === saved) {
+          State.wallet = { address, verified: false, tier: 'Unranked', balance: 0 };
+          renderTopbar();
+          await this.verify(address, p);
+        }
+      } catch (e) {}
+    },
+  };
+
+  function battleStatus(b) {
+    const now = Date.now();
+    const start = new Date(b.starts_at).getTime();
+    const end = new Date(b.ends_at).getTime();
+    if (b.status === 'finalized') return { cls: 'finished', label: 'FINISHED' };
+    if (b.status === 'cancelled') return { cls: 'finished', label: 'CANCELLED' };
+    if (now < start) return { cls: 'finished', label: 'SCHEDULED' };
+    if (end - now <= (CONFIG.ENDING_SOON_SECONDS || 300) * 1000) return { cls: 'ending', label: 'ENDING SOON' };
+    return { cls: 'live', label: 'LIVE' };
+  }
+
+  function battleCard(b) {
+    const st = battleStatus(b);
+    const total = (b.votes_a + b.votes_b) || 1;
+    const pctA = Math.round((b.votes_a / total) * 100);
+    const pctB = 100 - pctA;
+    const myVote = State.votes[b.id];
+    const myPred = State.predictions[b.id];
+    const finished = b.status === 'finalized';
+    const canVote = !finished && !myVote;
+
+    const side = (s, e, cls) => {
+      const post = (e && e.post) || {};
+      const isWinner = finished && b.winner === s;
+      return '<div class="side ' + (isWinner ? 'winner' : '') + '">' +
+        '<div class="side-author">' +
+          '<div class="side-av">' + esc((post.author || '?')[0]) + '</div>' +
+          '<div>' +
+            '<div class="side-name">' + esc(post.author || 'Unknown') + '</div>' +
+            '<div class="side-handle">' + esc(post.handle || '@unknown') + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<p class="side-text">' + esc(post.text || 'No preview available.') + '</p>' +
+        (post.url ? '<a class="side-link" href="' + esc(post.url) + '" target="_blank" rel="noopener">View on X ↗</a>' : '') +
+        '<div class="vote-stats">' +
+          '<span><b>' + fmt(b['votes_' + s]) + '</b> votes</span>' +
+          '<span>' + (s === 'a' ? pctA : pctB) + '%</span>' +
+        '</div>' +
+        '<button class="vote-btn ' + cls + ' ' + (myVote === (e && e.id) ? 'voted' : '') + '" ' +
+          'data-vote="' + b.id + '" data-entry="' + (e && e.id) + '" ' +
+          (!canVote ? 'disabled' : '') + '>' +
+          (myVote === (e && e.id) ? '✓ Voted' : finished ? 'Closed' : 'Vote') +
+        '</button>' +
+      '</div>';
+    };
+
+    return '<article class="battle" data-battle="' + b.id + '">' +
+      '<div class="battle-head">' +
+        '<span class="status ' + st.cls + '">' + st.label + '</span>' +
+        '<span class="battle-timer" data-countdown="' + b.ends_at + '">' +
+          '<b>' + countdown(new Date(b.ends_at) - Date.now()) + '</b>' +
+        '</span>' +
+      '</div>' +
+      '<div class="votebar">' +
+        '<i class="vb-a" style="width:' + pctA + '%"></i>' +
+        '<i class="vb-b" style="width:' + pctB + '%"></i>' +
+      '</div>' +
+      '<div class="arena">' +
+        side('a', b.entry_a, 'a') +
+        '<div class="arena-vs">VS</div>' +
+        side('b', b.entry_b, 'b') +
+      '</div>' +
+      '<div class="react-row">' +
+        ['🔥','💎','🚀','🧠'].map(e =>
+          '<button class="react" data-react="' + b.id + '" data-emoji="' + e + '">' + e + '</button>').join('') +
+        '<button class="btn btn-ghost btn-sm" style="margin-left:auto" ' +
+          'data-predict="' + b.id + '" ' + (finished || myPred ? 'disabled' : '') + '>' +
+          (myPred ? '🔮 Locked' : '🔮 Predict') +
+        '</button>' +
+      '</div>' +
+      '<div class="battle-foot">' +
+        b.id.slice(0, 16) + ' · ' + fmt(total) + ' votes' +
+        (finished && b.winner ? ' · Winner: ' + b.winner.toUpperCase() : '') +
+      '</div>' +
+    '</article>';
+  }
+
+  function patchBattle(b) {
+    const el = document.querySelector('[data-battle="' + b.id + '"]');
+    if (!el) return;
+    const wrap = document.createElement('div');
+    wrap.innerHTML = battleCard(b);
+    el.replaceWith(wrap.firstElementChild);
+  }
+
+  /* ── Views ───────────────────────────────────────────────── */
+  async function viewArena() {
+    await loadBattles();
+    const live = State.battles.filter(b => b.status === 'live');
+    const done = State.battles.filter(b => b.status === 'finalized');
+    $('#view').innerHTML =
+      '<div class="view-head"><h1>Arena</h1><p>Two posts enter. One wins. Vote in live rounds.</p></div>' +
+      '<div class="stats">' +
+        '<div class="stat"><b>' + live.length + '</b><span>Live battles</span></div>' +
+        '<div class="stat"><b>' + fmt(live.reduce((s,b)=>s+b.votes_a+b.votes_b,0)) + '</b><span>Votes in play</span></div>' +
+        '<div class="stat"><b>' + done.length + '</b><span>Settled</span></div>' +
+        '<div class="stat"><b>' + fmt(State.profile && State.profile.xp || 0) + '</b><span>Your XP</span></div>' +
+      '</div>' +
+      (live.length
+        ? '<h2 style="font-size:15px;margin:24px 0 12px">Live now</h2><div>' + live.map(battleCard).join('') + '</div>'
+        : '<div class="empty"><div class="ico">◈</div><h3>No live battles yet</h3>' +
+          '<p>Rounds appear here once they are created in your Supabase <code>battles</code> table with status <code>live</code>.</p>' +
+          '<a class="btn btn-outline" href="#/discover">Submit a post</a></div>') +
+      (done.length
+        ? '<h2 style="font-size:15px;margin:32px 0 12px">Recently settled</h2><div>' + done.slice(0, 6).map(battleCard).join('') + '</div>'
+        : '');
+  }
+
+  async function viewDiscover() {
+    const canSubmit = State.wallet && State.wallet.verified;
+    $('#view').innerHTML =
+      '<div class="view-head"><h1>Discover</h1><p>Paste a public X post URL to enter it into an upcoming round.</p></div>' +
+      '<div class="panel" style="margin-bottom:18px">' +
+        '<h3>Submit a post</h3>' +
+        '<div class="field"><label for="post-url">X post URL</label>' +
+          '<input class="input" id="post-url" type="url" placeholder="https://x.com/handle/status/1234567890" />' +
+          '<p class="hint" id="url-hint">Format: https://x.com/&lt;handle&gt;/status/&lt;id&gt;</p>' +
+        '</div>' +
+        '<button class="btn btn-primary" id="btn-submit-post" ' + (canSubmit ? '' : 'disabled') + '>' +
+          (canSubmit ? 'Submit post' : 'Verify wallet first') +
+        '</button>' +
+      '</div>' +
+      '<div class="panel"><h3>Your submissions</h3>' +
+        '<div id="my-posts"><div class="empty" style="padding:30px"><p style="margin:0">Loading…</p></div></div>' +
+      '</div>';
+
+    const inp = $('#post-url');
+    if (inp) inp.addEventListener('input', () => {
+      const ok = /^https?:\/\/(www\.)?(x|twitter)\.com\/[A-Za-z0-9_]+\/status\/\d+/.test(inp.value.trim());
+      inp.classList.toggle('err', inp.value.length > 0 && !ok);
+      $('#url-hint').className = 'hint' + (inp.value.length > 0 && !ok ? ' err' : '');
+      $('#url-hint').textContent = inp.value.length > 0 && !ok
+        ? 'Not a valid X post URL' : 'Format: https://x.com/<handle>/status/<id>';
+      $('#btn-submit-post').disabled = !ok || !canSubmit;
+    });
+
+    $('#btn-submit-post') && ($('#btn-submit-post').onclick = async () => {
+      const url = inp.value.trim();
+      const { error } = await State.sb.from('posts').insert({ url, status: 'pending' });
+      if (error) {
+        toast(error.code === '23505' ? 'Already submitted' : 'Failed: ' + error.message,
+              error.code === '23505' ? 'warn' : 'err');
+        return;
+      }
+      toast('Post submitted');
+      inp.value = '';
+      loadMyPosts();
+    });
+
+    loadMyPosts();
+  }
+
+  async function loadMyPosts() {
+    const el = $('#my-posts');
+    if (!el) return;
+    const { data: { user } } = await State.sb.auth.getUser();
+    if (!user) {
+      el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">Sign in with a wallet to see your submissions.</p></div>';
+      return;
+    }
+    const { data } = await State.sb.from('posts').select('*').eq('user_id', user.id)
+      .order('created_at', { ascending: false }).limit(20);
+    if (!data || !data.length) {
+      el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">No submissions yet.</p></div>';
+      return;
+    }
+    el.innerHTML = data.map(p =>
+      '<div class="row"><div class="row-rank">◇</div><div class="row-main">' +
+      '<div class="row-name">' + esc(p.author || 'Pending') + ' <span class="badge">' + esc(p.status) + '</span></div>' +
+      '<div class="row-sub">' + esc(p.url.slice(0, 60)) + '</div></div></div>').join('');
+  }
+
+  async function viewPredictions() {
+    await loadBattles();
+    const open = State.battles.filter(b => b.status === 'live');
+    $('#view').innerHTML =
+      '<div class="view-head"><h1>Predictions</h1><p>Call the winner before the round ends. No wagers.</p></div>' +
+      '<div class="stats">' +
+        '<div class="stat"><b>' + Object.keys(State.predictions).length + '</b><span>Your predictions</span></div>' +
+        '<div class="stat"><b>' + CONFIG.XP.PREDICT + '</b><span>XP per prediction</span></div>' +
+        '<div class="stat"><b>' + CONFIG.XP.CORRECT_PREDICTION + '</b><span>XP if correct</span></div>' +
+      '</div>' +
+      (open.length ? open.map(b => {
+        const locked = State.predictions[b.id];
+        return '<div class="row"><div class="row-rank">🔮</div>' +
+          '<div class="row-main"><div class="row-name">' +
+            esc(b.entry_a.post && b.entry_a.post.handle || '?') + ' vs ' +
+            esc(b.entry_b.post && b.entry_b.post.handle || '?') + '</div>' +
+          '<div class="row-sub">Ends in ' + countdown(new Date(b.ends_at) - Date.now()) + '</div></div>' +
+          (locked
+            ? '<span class="badge violet">Locked</span>'
+            : '<button class="btn btn-violet btn-sm" data-predict="' + b.id + '">Predict</button>') +
+        '</div>';
+      }).join('') : '<div class="empty"><div class="ico">◎</div><h3>No open battles</h3><p>Predictions open when a round goes live.</p></div>');
+  }
+
+  async function viewLeaderboard() {
+    const rows = await loadLeaderboard();
+    $('#view').innerHTML =
+      '<div class="view-head"><h1>Leaderboard</h1><p>Ranked by XP earned through votes, predictions and quests.</p></div>' +
+      (rows.length ? rows.map((r, i) =>
+        '<div class="row"><div class="row-rank ' + (i < 3 ? 'top' : '') + '">' + (i+1) + '</div>' +
+        '<div class="row-main"><div class="row-name">' + esc(r.handle || 'anon') +
+          (i === 0 ? ' <span class="badge accent">LEADER</span>' : '') + '</div>' +
+        '<div class="row-sub">' + (r.wins || 0) + ' correct · ' + (r.streak || 0) + 'd streak</div></div>' +
+        '<div class="row-val">' + fmt(r.xp) + ' XP</div></div>').join('')
+        : '<div class="empty"><div class="ico">▲</div><h3>No players yet</h3>' +
+          '<p>Profiles appear here once users connect their wallets and earn XP.</p></div>');
+  }
+
+  async function viewQuests() {
+    const { data: quests } = await State.sb.from('quests').select('*').eq('active', true);
+    const { data: achs } = await State.sb.from('achievements').select('*');
+    const { data: { user } } = await State.sb.auth.getUser();
+    let prog = [], mine = [];
+    if (user) {
+      const r1 = await State.sb.from('quest_progress').select('*').eq('user_id', user.id);
+      const r2 = await State.sb.from('user_achievements').select('achievement_id').eq('user_id', user.id);
+      prog = r1.data || [];
+      mine = (r2.data || []).map(m => m.achievement_id);
+    }
+
+    $('#view').innerHTML =
+      '<div class="view-head"><h1>Quests & achievements</h1><p>Daily objectives refresh every 24 hours.</p></div>' +
+      '<div class="stats">' +
+        '<div class="stat"><b>' + prog.filter(p => p.completed).length + '/' + (quests || []).length + '</b><span>Quests done</span></div>' +
+        '<div class="stat"><b>' + mine.length + '/' + (achs || []).length + '</b><span>Achievements</span></div>' +
+        '<div class="stat"><b>' + fmt(State.profile && State.profile.xp || 0) + '</b><span>Total XP</span></div>' +
+      '</div>' +
+      '<h2 style="font-size:15px;margin:8px 0 12px">Daily quests</h2>' +
+      ((quests || []).length ? quests.map(q => {
+        const p = prog.find(x => x.quest_id === q.id) || { progress: 0, completed: false };
+        return '<div class="quest ' + (p.completed ? 'done' : '') + '">' +
+          '<div class="quest-ico">' + esc(q.icon) + '</div>' +
+          '<div class="quest-main"><h4>' + esc(q.title) +
+            (p.completed ? ' <span class="badge accent">DONE</span>' : '') + '</h4>' +
+            '<p>' + esc(q.description || '') + '</p>' +
+            '<div class="progress"><i style="width:' + Math.min(100, (p.progress / q.goal) * 100) + '%"></i></div>' +
+          '</div>' +
+          '<div class="quest-xp">+' + q.xp_reward + ' XP</div>' +
+        '</div>';
+      }).join('') : '<div class="empty"><p>No quests configured.</p></div>') +
+      '<h2 style="font-size:15px;margin:32px 0 12px">Achievements</h2>' +
+      ((achs || []).length ? '<div class="ach-grid">' + achs.map(a =>
+        '<div class="ach ' + (mine.indexOf(a.id) >= 0 ? 'on' : '') + '">' +
+          '<div class="ach-ico">' + esc(a.icon) + '</div>' +
+          '<h4>' + esc(a.title) + '</h4><p>' + esc(a.description || '') + '</p>' +
+        '</div>').join('') + '</div>'
+        : '<div class="empty"><p>No achievements configured.</p></div>');
+  }
+
+  async function viewProfile() {
+    if (!State.profile) {
+      $('#view').innerHTML =
+        '<div class="empty"><div class="ico">●</div><h3>Not signed in</h3>' +
+        '<p>Connect your wallet to build a profile.</p>' +
+        '<button class="btn btn-primary" data-action="wallet-toggle">Connect Phantom</button></div>';
+      return;
+    }
+    const p = State.profile;
+    $('#view').innerHTML =
+      '<div class="profile-head">' +
+        '<div class="p-avatar">' + esc((p.handle || '?')[0].toUpperCase()) + '</div>' +
+        '<div class="p-info"><h1>' + esc(p.handle || 'clasher') + '</h1>' +
+          '<div class="p-handle">' + (State.wallet ? short(State.wallet.address) : 'no wallet') + '</div>' +
+          '<div class="p-tags">' +
+            '<span class="badge accent">' + esc((State.wallet && State.wallet.tier) || 'Unranked') + '</span>' +
+            '<span class="badge">' + (p.streak || 0) + '🔥 streak</span>' +
+          '</div>' +
+        '</div>' +
+        '<div style="margin-left:auto;text-align:right">' +
+          '<div style="font-size:30px;font-weight:700;letter-spacing:-.03em">' + fmt(p.xp) + '</div>' +
+          '<div style="font-size:11px;color:var(--dim);font-family:var(--fm);text-transform:uppercase">Total XP</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="stats">' +
+        '<div class="stat"><b>' + (p.wins || 0) + '</b><span>Correct predictions</span></div>' +
+      '</div>';
+  }
+
+  async function viewSettings() {
+    const tiers = await loadTiers();
+    const holder = (State.wallet && State.wallet.balance) || 0;
+    const current = [].concat(tiers).reverse().find(t => holder >= t.req)
+                 || (tiers[0] || { name: 'Unranked', color: '#5A635A', mult: 1 });
+
+    $('#view').innerHTML =
+      '<div class="view-head"><h1>Settings</h1><p>Wallet, tiers and configuration.</p></div>' +
+      '<div class="panel"><h3>Supabase</h3>' +
+        '<div class="row"><div class="row-main">' +
+          '<div class="row-name">✅ Connected</div>' +
+          '<div class="row-sub">' + esc(CONFIG.SUPABASE_URL) + '</div>' +
+        '</div></div>' +
+      '</div>' +
+      '<div class="panel"><h3>Phantom wallet</h3>' +
+        '<div class="row"><div class="row-main">' +
+          '<div class="row-name">' + (State.wallet ? short(State.wallet.address) : 'Not connected') + '</div>' +
+          '<div class="row-sub">' + (State.wallet && State.wallet.verified ? 'Signature verified' : 'Unverified') + '</div>' +
+        '</div>' +
+        '<button class="btn btn-sm ' + (State.wallet ? 'btn-danger' : 'btn-primary') + '" data-action="wallet-toggle">' +
+          (State.wallet ? 'Disconnect' : 'Connect') +
+        '</button></div>' +
+        (!Wallet.available() ? '<p class="hint">Phantom extension not detected.</p>' : '') +
+      '</div>' +
+      '<div class="panel"><h3>Token tier</h3>' +
+        '<p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">' +
+          'Current: <b style="color:' + current.color + '">' + esc(current.name) + '</b> · ' +
+          fmt(holder) + ' tokens · ' + current.mult + '× XP' +
+        '</p>' +
+        tiers.map(t =>
+          '<div class="row"><div class="row-rank" style="background:' + t.color + '22;color:' + t.color + '">' +
+            (t.req >= 1000 ? fmt(t.req) : t.req) + '</div>' +
+            '<div class="row-main"><div class="row-name" style="color:' + t.color + '">' + esc(t.name) + '</div>' +
+            '<div class="row-sub">Minimum ' + fmt(t.req) + ' tokens</div></div>' +
+            '<div class="row-val" style="color:' + t.color + '">' + t.mult + '×</div>' +
+          '</div>').join('') +
+      '</div>';
+  }
+
+  const ROUTES = {
+    arena:       { title: 'Arena',       render: viewArena },
+    discover:    { title: 'Discover',    render: viewDiscover },
+    predictions: { title: 'Predictions', render: viewPredictions },
+    leaderboard: { title: 'Leaderboard', render: viewLeaderboard },
+    quests:      { title: 'Quests',      render: viewQuests },
+    profile:     { title: 'Profile',     render: viewProfile },
+    settings:    { title: 'Settings',    render: viewSettings },
+  };
+
+  async function navigate() {
+    const hash = location.hash.replace(/^#\/?/, '') || 'arena';
+    const route = ROUTES[hash] ? hash : 'arena';
+    $$('.nav a, .mobile-nav a').forEach(a =>
+      a.classList.toggle('active', a.dataset.nav === route));
+    $('#view-title').textContent = ROUTES[route].title;
+    $('#view').innerHTML = '<div class="empty"><div class="ico">◈</div><h3>Loading…</h3></div>';
+    try { await ROUTES[route].render(); }
+    catch (e) {
+      console.error(e);
+      $('#view').innerHTML = '<div class="empty"><div class="ico">⚠</div>' +
+        '<h3>Something went wrong</h3><p>' + esc(e.message || 'Unknown error') + '</p></div>';
+    }
+    window.scrollTo(0, 0);
+  }
+
+  function renderTopbar() {
+    const w = State.wallet;
+    const pill = $('#wallet-pill');
+    pill.classList.toggle('connected', !!w);
+    $('#wp-addr').textContent = w ? short(w.address) : 'Connect';
+    $('#wp-dot').style.background = w ? (w.verified ? 'var(--accent)' : 'var(--warn)') : 'var(--dim)';
+    const tier = (w && w.tier) || 'Unranked';
+    $('#tier-value').textContent = tier;
+    const colors = { Unranked:'#5A635A', Bronze:'#C08050', Silver:'#B8C4C0', Gold:'#FFB020', Diamond:'#39FF14' };
+    $('#tier-dot').style.background = colors[tier] || 'var(--dim)';
+    $('#xp-value').textContent = fmt(State.profile && State.profile.xp || 0);
+    const p = State.profile;
+    if (p && p.avatar_url) {
+      $('#avatar-img').src = p.avatar_url;
+      $('#avatar-img').hidden = false;
+      $('#avatar-fallback').hidden = true;
+    } else {
+      $('#avatar-fallback').textContent = ((p && p.handle) || '?')[0].toUpperCase();
+    }
+  }
+
+  async function refreshProfile() {
+    if (!State.sb) return;
+    const { data: { user } } = await State.sb.auth.getUser();
+    if (!user) { renderTopbar(); return; }
+    const { data } = await State.sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
+    State.profile = data || null;
+    renderTopbar();
+  }
+
+  document.addEventListener('click', async e => {
+    const t = e.target.closest('[data-action], [data-vote], [data-react], [data-predict]');
+    if (!t) return;
+    const action = t.dataset.action;
+    if (action === 'go') { location.hash = t.dataset.href; return; }
+    if (action === 'enter-app') {
+      $('#landing').hidden = true;
+      $('#app').hidden = false;
+      location.hash = '#/arena';
+      return;
+    }
+    if (action === 'wallet-toggle') {
+      State.wallet ? Wallet.disconnect() : await Wallet.connect();
+      return;
+    }
+    if (t.dataset.vote) {
+      if (!State.wallet) { toast('Connect your wallet to vote', 'warn'); Wallet.connect(); return; }
+      try {
+        await castVote(t.dataset.vote, t.dataset.entry);
+        toast('Vote recorded');
+        const b = State.battles.find(x => x.id === t.dataset.vote);
+        if (b) patchBattle(b);
+      } catch (err) { toast(err.message, 'err'); }
+      return;
+    }
+    if (t.dataset.react) {
+      if (!State.wallet) { toast('Connect your wallet to react', 'warn'); return; }
+      t.classList.toggle('on');
+      return;
+    }
+    if (t.dataset.predict) {
+      if (!State.wallet) { toast('Connect your wallet to predict', 'warn'); return; }
+      const b = State.battles.find(x => x.id === t.dataset.predict);
+      if (!b) return;
+      modal({
+        title: 'Predict the winner',
+        body: '<p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">' +
+              'Correct predictions earn ' + CONFIG.XP.CORRECT_PREDICTION + ' XP. Cannot be changed.</p>' +
+              '<div style="display:grid;gap:10px">' +
+                '<button class="btn btn-outline" data-pick="' + b.entry_a.id + '">' +
+                  esc(b.entry_a.post && b.entry_a.post.handle || 'Post A') + '</button>' +
+                '<button class="btn btn-outline" data-pick="' + b.entry_b.id + '">' +
+                  esc(b.entry_b.post && b.entry_b.post.handle || 'Post B') + '</button>' +
+              '</div>',
+        actions: [],
+      });
+      $$('[data-pick]').forEach(btn => {
+        btn.onclick = async () => {
+          try {
+            await castPrediction(b.id, btn.dataset.pick);
+            toast('Prediction locked');
+            $('#modal').hidden = true; $('#modal').innerHTML = '';
+            navigate();
+          } catch (err) { toast(err.message, 'err'); }
+        };
+      });
+    }
+  });
+
+  $('#btn-menu') && $('#btn-menu').addEventListener('click', () => {
+    $('#sidebar').classList.toggle('open');
+  });
+
+  setInterval(() => {
+    $$('[data-countdown]').forEach(el => {
+      const ms = new Date(el.dataset.countdown).getTime() - Date.now();
+      el.innerHTML = '<b>' + countdown(ms) + '</b>';
+    });
+  }, 1000);
+
+  async function boot() {
+    $('#yr').textContent = new Date().getFullYear();
+
+    if (!IS_CONFIGURED) {
+      $('#boot-note').textContent = 'Add SUPABASE_URL and SUPABASE_ANON_KEY to the CONFIG block in this file.';
+      return;
+    }
+
+    State.sb = initSupabase();
+    if (!State.sb) {
+      $('#boot-note').textContent = 'Supabase failed to load. Check your URL and anon key.';
+      return;
+    }
+
+    const tiers = await loadTiers();
+    $('#landing-tiers').innerHTML = tiers.length ? tiers.map(t =>
+      '<div class="tier" style="--tc:' + t.color + '"><h4>' + esc(t.name) + '</h4>' +
+      '<div class="req">' + (t.req === 0 ? 'No minimum' : '≥ ' + fmt(t.req) + ' tokens') + '</div>' +
+      '<div class="mult">' + t.mult + '× <small>XP</small></div></div>').join('')
+      : '<p style="color:var(--muted)">No tiers configured.</p>';
+
+    try {
+      const { count: bc } = await State.sb.from('battles').select('*', { count: 'exact', head: true }).eq('status', 'live');
+      $('#hs-battles').textContent = fmt(bc || 0);
+      const { count: vc } = await State.sb.from('votes').select('*', { count: 'exact', head: true });
+      $('#hs-votes').textContent = fmt(vc || 0);
+      const { count: uc } = await State.sb.from('profiles').select('*', { count: 'exact', head: true });
+      $('#hs-users').textContent = fmt(uc || 0);
+    } catch (e) { console.error(e); }
+
+    const { data: { session } } = await State.sb.auth.getSession();
+    if (!session) {
+      try { await State.sb.auth.signInAnonymously(); } catch (e) { console.warn(e); }
+    }
+    await refreshProfile();
+    await Wallet.autoReconnect();
+
+    $('#boot').classList.add('gone');
+    $('#landing').hidden = false;
+
+    window.addEventListener('hashchange', navigate);
+    if (location.hash && location.hash !== '#/') {
+      $('#landing').hidden = true;
+      $('#app').hidden = false;
+    }
+    await navigate();
+    subscribeRealtime();
+  }
+
+  boot().catch(err => {
+    console.error('[PostClash]', err);
+    const note = $('#boot-note');
+    if (note) note.textContent = 'Boot failed — ' + (err.message || 'check console');
+  });
+
+})();
+</script>
+</body>
+</html>
