@@ -114,12 +114,6 @@ code{font-family:var(--fm);font-size:12.5px}
   border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:15}
 .topbar-title{font-weight:600;font-size:15px}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.chip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;
-  border-radius:100px;border:1px solid var(--border);font-size:12.5px;color:var(--muted)}
-.chip:hover{border-color:var(--border-hi);color:var(--text)}
-.chip b{color:var(--text);font-family:var(--fm)}
-.chip span:first-child{font-family:var(--fm);font-size:10px;letter-spacing:.1em;color:var(--dim)}
-.tier-dot{width:7px;height:7px;border-radius:50%;background:var(--dim);display:inline-block}
 .wallet-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;
   border-radius:100px;border:1px solid var(--border-hi);font-size:12.5px}
 .wallet-pill:hover{border-color:var(--accent);color:var(--accent)}
@@ -130,7 +124,6 @@ code{font-family:var(--fm);font-size:12.5px}
   display:grid;place-content:center;font-size:13px;font-weight:600;color:var(--muted);
   overflow:hidden;background:var(--panel-3)}
 .avatar:hover{border-color:var(--accent)}
-.avatar img{width:100%;height:100%;object-fit:cover}
 .view{padding:26px clamp(16px,3vw,32px) 90px;flex:1;max-width:1400px;width:100%}
 .mobile-nav{display:none}
 
@@ -214,7 +207,6 @@ code{font-family:var(--fm);font-size:12.5px}
 .badge{font-size:10.5px;font-family:var(--fm);letter-spacing:.08em;text-transform:uppercase;
   padding:3px 8px;border-radius:100px;border:1px solid var(--border-hi);color:var(--muted)}
 .badge.accent{color:var(--accent);border-color:rgba(57,255,20,.35);background:rgba(57,255,20,.06)}
-.badge.violet{color:var(--violet);border-color:rgba(155,92,255,.35);background:rgba(155,92,255,.06)}
 
 .field{margin-bottom:16px}
 .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;
@@ -231,26 +223,6 @@ code{font-family:var(--fm);font-size:12.5px}
 .stat b{display:block;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:2px}
 .stat span{font-size:11px;color:var(--dim);text-transform:uppercase;
   letter-spacing:.1em;font-family:var(--fm)}
-
-.quest{display:flex;gap:16px;align-items:center;padding:16px;
-  border:1px solid var(--border);border-radius:var(--r);background:var(--panel)}
-.quest + .quest{margin-top:10px}
-.quest.done{border-color:rgba(57,255,20,.3);background:rgba(57,255,20,.03)}
-.quest-ico{width:42px;height:42px;border-radius:var(--r);display:grid;place-content:center;
-  background:var(--panel-3);font-size:18px;flex:none}
-.quest-main{flex:1;min-width:0}
-.quest-main h4{font-size:14px;margin-bottom:2px}
-.quest-main p{font-size:12.5px;color:var(--muted)}
-.progress{height:5px;border-radius:100px;background:var(--panel-3);overflow:hidden;margin-top:8px}
-.progress i{display:block;height:100%;background:var(--accent);border-radius:100px}
-.quest-xp{font-family:var(--fm);font-size:13px;color:var(--accent);font-weight:600;white-space:nowrap}
-.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
-.ach{text-align:center;padding:18px 12px;border:1px solid var(--border);
-  border-radius:var(--r);background:var(--panel);opacity:.4}
-.ach.on{opacity:1;border-color:rgba(57,255,20,.3);background:rgba(57,255,20,.03)}
-.ach-ico{font-size:24px;margin-bottom:8px}
-.ach h4{font-size:12.5px;margin-bottom:2px}
-.ach p{font-size:11px;color:var(--dim)}
 
 .profile-head{display:flex;gap:22px;align-items:center;flex-wrap:wrap;padding:24px;
   border:1px solid var(--border);border-radius:var(--r-lg);background:var(--panel);margin-bottom:18px}
@@ -295,7 +267,6 @@ code{font-family:var(--fm);font-size:12.5px}
     font-size:10px;color:var(--dim);padding:5px 2px}
   .mobile-nav a span{font-size:15px}
   .mobile-nav a.active{color:var(--accent)}
-  .chip{display:none}
   .arena{grid-template-columns:1fr}
   .arena-vs{padding:12px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
   .toast-root{left:14px;right:14px;bottom:80px}
@@ -343,7 +314,7 @@ code{font-family:var(--fm);font-size:12.5px}
     <h2>How it works</h2>
     <div class="steps">
       <article><span>01</span><h3>Connect Phantom</h3><p>Sign a message. Verified in your browser.</p></article>
-      <article><span>02</span><h3>Submit a post</h3><p>Paste a public X URL. Format validated.</p></article>
+      <article><span>02</span><h3>Submit a post</h3><p>Paste a public X URL. Preview loads automatically.</p></article>
       <article><span>03</span><h3>Vote</h3><p>Pick the winner in live rounds.</p></article>
       <article><span>04</span><h3>Clash</h3><p>Backend settles. Winner is final.</p></article>
     </div>
@@ -536,7 +507,7 @@ code{font-family:var(--fm);font-size:12.5px}
       .subscribe();
   }
 
-  /* ─── Wallet — direct Phantom, no Supabase ──────────────── */
+  /* ─── Wallet — direct Phantom ─────────────────────────────── */
   const Wallet = {
     provider() {
       return window.phantom?.solana?.isPhantom ? window.phantom.solana
@@ -558,7 +529,6 @@ code{font-family:var(--fm);font-size:12.5px}
         const res = await p.connect();
         const address = res.publicKey.toString();
 
-        // Sign a message to prove ownership
         const message =
           'PostClash wallet verification\n\n' +
           'Address: ' + address + '\n' +
@@ -568,7 +538,6 @@ code{font-family:var(--fm);font-size:12.5px}
         const encoded = new TextEncoder().encode(message);
         const signed = await p.signMessage(encoded, 'utf8');
 
-        // Verify locally with tweetnacl
         const valid = nacl.sign.detached.verify(
           encoded,
           signed.signature,
@@ -719,189 +688,189 @@ code{font-family:var(--fm);font-size:12.5px}
         : '');
   }
 
+  /* ─── Preview via fxtwitter ───────────────────────────────── */
   async function fetchPostPreview(url) {
-  try {
-    const r = await fetch('https://noembed.com/embed?url=' + encodeURIComponent(url));
-    if (!r.ok) throw new Error('Preview service unavailable');
-    const d = await r.json();
-    if (d.error) throw new Error(d.error);
+    try {
+      const match = url.match(/(?:x|twitter)\.com\/([^\/]+)\/status\/(\d+)/);
+      if (!match) throw new Error('Invalid URL format');
+      const [, handle, id] = match;
+      const apiUrl = 'https://api.fxtwitter.com/' + handle + '/status/' + id;
 
-    // Extract handle from author_url
-    const handle = d.author_url ? '@' + d.author_url.split('/').filter(Boolean).pop() : '@unknown';
+      const r = await fetch(apiUrl);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
 
-    // Strip the blockquote wrapper to get plain text
-    let text = d.title || '';
-    if (d.html) {
-      const m = d.html.match(/<p[^>]*>([\s\S]*?)<\/p>/);
-      if (m) {
-        text = m[1].replace(/<[^>]+>/g, '').replace(/&mdash;/g, '—').replace(/&amp;/g, '&').trim();
-      }
+      if (d.code !== 200 || !d.tweet) throw new Error('Post not found');
+
+      const t = d.tweet;
+      const author = t.author || {};
+
+      return {
+        author: author.name || 'Unknown',
+        handle: '@' + (author.screen_name || handle),
+        text: t.text || '',
+        url,
+        avatar_url: author.avatar_url || '',
+      };
+    } catch (e) {
+      console.warn('[Preview]', e.message);
+      return null;
     }
-
-    return {
-      author: d.author_name || 'Unknown',
-      handle,
-      text,
-      url,
-      avatar_url: '',
-    };
-  } catch (e) {
-    console.warn('[Preview]', e.message);
-    return null;
   }
-}
 
-async function viewDiscover() {
-  const canSubmit = State.wallet && State.wallet.verified;
+  async function viewDiscover() {
+    const canSubmit = State.wallet && State.wallet.verified;
 
-  $('#view').innerHTML =
-    '<div class="view-head"><h1>Discover</h1><p>Paste a public X post URL to enter it into an upcoming round.</p></div>' +
-    '<div class="panel" style="margin-bottom:18px">' +
-      '<h3>Submit a post</h3>' +
-      '<div class="field">' +
-        '<label for="post-url">X post URL</label>' +
-        '<input class="input" id="post-url" type="url" placeholder="https://x.com/handle/status/1234567890" />' +
-        '<p class="hint" id="url-hint">Format: https://x.com/&lt;handle&gt;/status/&lt;id&gt;</p>' +
-      '</div>' +
-      '<div id="preview-area"></div>' +
-      '<button class="btn btn-primary" id="btn-submit-post" disabled style="margin-top:14px">' +
-        (canSubmit ? 'Loading preview…' : 'Connect wallet first') +
-      '</button>' +
-    '</div>' +
-    '<div class="panel"><h3>Your submissions</h3>' +
-      '<div id="my-posts"><div class="empty" style="padding:30px"><p style="margin:0">Loading…</p></div></div>' +
-    '</div>';
-
-  const inp = $('#post-url');
-  const preview = $('#preview-area');
-  const submitBtn = $('#btn-submit-post');
-  let pendingPreview = null;
-  let previewUrl = null;
-
-  if (!canSubmit) return;
-
-  async function handleInput() {
-    const url = inp.value.trim();
-    const valid = /^https?:\/\/(www\.)?(x|twitter)\.com\/[A-Za-z0-9_]+\/status\/\d+/.test(url);
-
-    inp.classList.toggle('err', url.length > 0 && !valid);
-    $('#url-hint').className = 'hint' + (url.length > 0 && !valid ? ' err' : '');
-    $('#url-hint').textContent = url.length > 0 && !valid
-      ? 'Not a valid X post URL'
-      : 'Format: https://x.com/<handle>/status/<id>';
-
-    preview.innerHTML = '';
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Loading preview…';
-    pendingPreview = null;
-    previewUrl = null;
-
-    if (!valid) {
-      submitBtn.textContent = 'Submit post';
-      return;
-    }
-    if (url === previewUrl) return;
-    previewUrl = url;
-
-    preview.innerHTML =
-      '<div style="padding:16px;border:1px solid var(--border);border-radius:8px;' +
-      'background:var(--panel-2);color:var(--muted);font-size:13px">' +
-      'Loading preview…</div>';
-
-    const data = await fetchPostPreview(url);
-    if (previewUrl !== url) return; // user typed something else
-
-    if (!data) {
-      preview.innerHTML =
-        '<div style="padding:16px;border:1px solid rgba(255,176,32,.35);border-radius:8px;' +
-        'background:rgba(255,176,32,.06);color:var(--warn);font-size:13px">' +
-        '⚠ Preview unavailable. You can still submit — the URL will be validated server-side.</div>';
-      pendingPreview = { url, author: null, handle: null, text: null };
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit without preview';
-      return;
-    }
-
-    pendingPreview = data;
-
-    // Render the preview card
-    preview.innerHTML =
-      '<div style="border:1px solid var(--border);border-radius:8px;background:var(--panel-2);' +
-      'padding:16px;display:flex;flex-direction:column;gap:12px">' +
-        '<div style="display:flex;align-items:center;gap:10px">' +
-          '<div style="width:36px;height:36px;border-radius:50%;background:var(--panel-3);' +
-          'display:grid;place-content:center;font-weight:600;font-size:13px;color:var(--muted);' +
-          'border:1px solid var(--border)">' + esc((data.author || '?')[0]) + '</div>' +
-          '<div>' +
-            '<div style="font-weight:600;font-size:13.5px">' + esc(data.author) + '</div>' +
-            '<div style="font-size:12px;color:var(--dim);font-family:var(--fm)">' + esc(data.handle) + '</div>' +
-          '</div>' +
+    $('#view').innerHTML =
+      '<div class="view-head"><h1>Discover</h1><p>Paste a public X post URL to enter it into an upcoming round.</p></div>' +
+      '<div class="panel" style="margin-bottom:18px">' +
+        '<h3>Submit a post</h3>' +
+        '<div class="field">' +
+          '<label for="post-url">X post URL</label>' +
+          '<input class="input" id="post-url" type="url" placeholder="https://x.com/handle/status/1234567890" />' +
+          '<p class="hint" id="url-hint">Format: https://x.com/&lt;handle&gt;/status/&lt;id&gt;</p>' +
         '</div>' +
-        '<p style="font-size:14px;line-height:1.5;color:var(--text)">' + esc(data.text || '') + '</p>' +
-        '<a href="' + esc(data.url) + '" target="_blank" rel="noopener" ' +
-        'style="font-size:11.5px;color:var(--dim);font-family:var(--fm)">View on X ↗</a>' +
+        '<div id="preview-area"></div>' +
+        '<button class="btn btn-primary" id="btn-submit-post" disabled style="margin-top:14px">' +
+          (canSubmit ? 'Paste a URL above' : 'Connect wallet first') +
+        '</button>' +
+      '</div>' +
+      '<div class="panel"><h3>Your submissions</h3>' +
+        '<div id="my-posts"><div class="empty" style="padding:30px"><p style="margin:0">Loading…</p></div></div>' +
       '</div>';
 
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit post';
-  }
+    const inp = $('#post-url');
+    const preview = $('#preview-area');
+    const submitBtn = $('#btn-submit-post');
+    let pendingPreview = null;
+    let previewUrl = null;
 
-  inp.addEventListener('input', handleInput);
+    if (!canSubmit) return;
 
-  submitBtn.onclick = async () => {
-    if (!pendingPreview) return;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting…';
+    async function handleInput() {
+      const url = inp.value.trim();
+      const valid = /^https?:\/\/(www\.)?(x|twitter)\.com\/[A-Za-z0-9_]+\/status\/\d+/.test(url);
 
-    const { error } = await State.sb.from('posts').insert({
-      url: pendingPreview.url,
-      author: pendingPreview.author,
-      handle: pendingPreview.handle,
-      text: pendingPreview.text,
-      status: 'pending',
-    });
+      inp.classList.toggle('err', url.length > 0 && !valid);
+      $('#url-hint').className = 'hint' + (url.length > 0 && !valid ? ' err' : '');
+      $('#url-hint').textContent = url.length > 0 && !valid
+        ? 'Not a valid X post URL'
+        : 'Format: https://x.com/<handle>/status/<id>';
 
-    if (error) {
-      if (error.code === '23505') toast('This post was already submitted', 'warn');
-      else if (error.code === '42501') toast('Permission denied — check RLS policy on posts', 'err');
-      else toast('Failed: ' + error.message, 'err');
+      preview.innerHTML = '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Loading preview…';
+      pendingPreview = null;
+
+      if (!valid || url === previewUrl) return;
+      previewUrl = url;
+
+      preview.innerHTML =
+        '<div style="padding:16px;border:1px solid var(--border);border-radius:8px;' +
+        'background:var(--panel-2);color:var(--muted);font-size:13px">' +
+        'Loading preview…</div>';
+
+      const data = await fetchPostPreview(url);
+      if (previewUrl !== url) return;
+
+      if (!data) {
+        preview.innerHTML =
+          '<div style="padding:16px;border:1px solid rgba(255,176,32,.35);border-radius:8px;' +
+          'background:rgba(255,176,32,.06);color:var(--warn);font-size:13px">' +
+          '⚠ Preview unavailable. You can still submit the URL.</div>';
+        pendingPreview = { url, author: null, handle: null, text: null };
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit without preview';
+        return;
+      }
+
+      pendingPreview = data;
+
+      preview.innerHTML =
+        '<div style="border:1px solid var(--border);border-radius:8px;background:var(--panel-2);' +
+        'padding:16px;display:flex;flex-direction:column;gap:12px">' +
+          '<div style="display:flex;align-items:center;gap:10px">' +
+            '<div style="width:36px;height:36px;border-radius:50%;background:var(--panel-3);' +
+            'display:grid;place-content:center;font-weight:600;font-size:13px;color:var(--muted);' +
+            'border:1px solid var(--border)">' + esc((data.author || '?')[0]) + '</div>' +
+            '<div>' +
+              '<div style="font-weight:600;font-size:13.5px">' + esc(data.author) + '</div>' +
+              '<div style="font-size:12px;color:var(--dim);font-family:var(--fm)">' + esc(data.handle) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<p style="font-size:14px;line-height:1.5;color:var(--text)">' + esc(data.text) + '</p>' +
+          '<a href="' + esc(data.url) + '" target="_blank" rel="noopener" ' +
+          'style="font-size:11.5px;color:var(--dim);font-family:var(--fm)">View on X ↗</a>' +
+        '</div>';
+
       submitBtn.disabled = false;
       submitBtn.textContent = 'Submit post';
-      return;
     }
 
-    toast('Post submitted — awaiting round assignment');
-    inp.value = '';
-    preview.innerHTML = '';
-    submitBtn.textContent = 'Loading preview…';
-    submitBtn.disabled = true;
+    inp.addEventListener('input', handleInput);
+
+    submitBtn.onclick = async () => {
+      if (!pendingPreview) return;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      // Get the current anonymous user id so we can attach it to the post
+      const { data: { user } } = await State.sb.auth.getUser();
+
+      const row = {
+        url: pendingPreview.url,
+        author: pendingPreview.author,
+        handle: pendingPreview.handle,
+        text: pendingPreview.text,
+        status: 'pending',
+      };
+      if (user) row.user_id = user.id;
+
+      const { error } = await State.sb.from('posts').insert(row);
+
+      if (error) {
+        if (error.code === '23505') toast('This post was already submitted', 'warn');
+        else if (error.code === '42501') toast('Permission denied — run the SQL fix', 'err');
+        else toast('Failed: ' + error.message, 'err');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit post';
+        return;
+      }
+
+      toast('Post submitted — awaiting round assignment');
+      inp.value = '';
+      preview.innerHTML = '';
+      submitBtn.textContent = 'Paste a URL above';
+      submitBtn.disabled = true;
+      previewUrl = null;
+      pendingPreview = null;
+      loadMyPosts();
+    };
+
     loadMyPosts();
-  };
-
-  loadMyPosts();
-}
-
-async function loadMyPosts() {
-  const el = $('#my-posts');
-  if (!el) return;
-  const { data: { user } } = await State.sb.auth.getUser();
-  if (!user) {
-    el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">Connect a wallet to see your submissions.</p></div>';
-    return;
   }
-  const { data } = await State.sb.from('posts').select('*').eq('user_id', user.id)
-    .order('created_at', { ascending: false }).limit(20);
-  if (!data || !data.length) {
-    el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">No submissions yet.</p></div>';
-    return;
+
+  async function loadMyPosts() {
+    const el = $('#my-posts');
+    if (!el) return;
+    const { data: { user } } = await State.sb.auth.getUser();
+    if (!user) {
+      el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">Connect a wallet to see your submissions.</p></div>';
+      return;
+    }
+    const { data } = await State.sb.from('posts').select('*').eq('user_id', user.id)
+      .order('created_at', { ascending: false }).limit(20);
+    if (!data || !data.length) {
+      el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">No submissions yet.</p></div>';
+      return;
+    }
+    el.innerHTML = data.map(p =>
+      '<div class="row"><div class="row-rank">◇</div><div class="row-main">' +
+      '<div class="row-name">' + esc(p.author || 'Pending review') +
+        ' <span class="badge">' + esc(p.status) + '</span></div>' +
+      '<div class="row-sub">' + esc((p.text || p.url).slice(0, 70)) + '…</div>' +
+      '</div></div>').join('');
   }
-  el.innerHTML = data.map(p =>
-    '<div class="row"><div class="row-rank">◇</div><div class="row-main">' +
-    '<div class="row-name">' + esc(p.author || 'Pending review') +
-      ' <span class="badge">' + esc(p.status) + '</span></div>' +
-    '<div class="row-sub">' + esc((p.text || p.url).slice(0, 70)) + '…</div>' +
-    '</div></div>').join('');
-}
 
   async function viewLeaderboard() {
     const rows = await loadLeaderboard();
@@ -1040,13 +1009,11 @@ async function loadMyPosts() {
       return;
     }
 
-    // Get a session for RLS (anonymous)
     const { data: { session } } = await State.sb.auth.getSession();
     if (!session) {
       try { await State.sb.auth.signInAnonymously(); } catch (e) { console.warn('Anon signin:', e); }
     }
 
-    // Landing stats
     try {
       const { count: bc } = await State.sb.from('battles').select('*', { count: 'exact', head: true }).eq('status', 'live');
       $('#hs-battles').textContent = fmt(bc || 0);
