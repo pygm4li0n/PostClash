@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl.min.js"></script>
 <style>
 :root{
   --bg:#080A09; --panel:#111411; --panel-2:#0D100D; --panel-3:#161B16;
@@ -30,17 +31,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 img{max-width:100%;display:block}
 .mono{font-family:var(--fm)}
 code{font-family:var(--fm);font-size:12.5px}
-::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:#1D241D;border-radius:20px}
 
-.boot{position:fixed;inset:0;z-index:9999;background:var(--bg);
-  display:grid;place-content:center;justify-items:center;gap:20px;transition:opacity .4s}
+.boot{position:fixed;inset:0;z-index:9999;background:var(--bg);display:grid;
+  place-content:center;justify-items:center;gap:20px;transition:opacity .4s}
 .boot.gone{opacity:0;pointer-events:none;visibility:hidden}
 .boot-brand{display:flex;align-items:center;gap:10px}
 .boot-bar{width:200px;height:2px;background:#1A201A;overflow:hidden;border-radius:2px}
-.boot-bar i{display:block;height:100%;width:40%;background:var(--accent);
-  animation:slide 1.2s ease-in-out infinite}
+.boot-bar i{display:block;height:100%;width:40%;background:var(--accent);animation:slide 1.2s ease-in-out infinite}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
 .boot-note{font-size:12px;color:var(--dim);font-family:var(--fm);text-align:center;max-width:400px}
 
@@ -98,14 +95,6 @@ code{font-family:var(--fm);font-size:12.5px}
 .steps span{font-family:var(--fm);font-size:12px;color:var(--accent);letter-spacing:.1em}
 .steps h3{font-size:15px;margin:12px 0 6px}
 .steps p{font-size:13.5px;color:var(--muted)}
-.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
-.tier{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
-  padding:20px;position:relative;overflow:hidden}
-.tier::after{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:var(--tc)}
-.tier h4{font-size:14px;margin-bottom:2px}
-.tier .req{font-family:var(--fm);font-size:12px;color:var(--muted);margin-bottom:12px}
-.tier .mult{font-size:26px;font-weight:700;color:var(--tc)}
-.tier .mult small{font-size:11px;color:var(--dim);font-weight:400}
 .landing-footer{margin-top:auto;padding:26px clamp(20px,5vw,64px);
   border-top:1px solid var(--border);display:flex;justify-content:space-between;
   gap:16px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
@@ -253,7 +242,7 @@ code{font-family:var(--fm);font-size:12.5px}
 .quest-main h4{font-size:14px;margin-bottom:2px}
 .quest-main p{font-size:12.5px;color:var(--muted)}
 .progress{height:5px;border-radius:100px;background:var(--panel-3);overflow:hidden;margin-top:8px}
-.progress i{display:block;height:100%;background:var(--accent);border-radius:100px;transition:width .5s}
+.progress i{display:block;height:100%;background:var(--accent);border-radius:100px}
 .quest-xp{font-family:var(--fm);font-size:13px;color:var(--accent);font-weight:600;white-space:nowrap}
 .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
 .ach{text-align:center;padding:18px 12px;border:1px solid var(--border);
@@ -333,18 +322,13 @@ code{font-family:var(--fm);font-size:12.5px}
     </div>
     <nav class="landing-links">
       <a href="#how">How it works</a>
-      <a href="#tiers">Tiers</a>
       <button class="btn btn-primary" data-action="enter-app">Enter Arena</button>
     </nav>
   </header>
-
   <div class="hero">
     <div class="hero-eyebrow"><span class="dot"></span> Live on Solana</div>
     <h1 class="hero-title">Every post<br />has a <em>rival.</em></h1>
-    <p class="hero-sub">
-      Submit a public X post. Challenge another. Let the community decide which one wins.
-      No wagers — just XP, reputation and the leaderboard.
-    </p>
+    <p class="hero-sub">Submit a public X post. Challenge another. Let the community decide which one wins.</p>
     <div class="hero-actions">
       <button class="btn btn-primary btn-lg" data-action="enter-app">Enter the Arena</button>
       <a class="btn btn-outline btn-lg" href="#how">How it works</a>
@@ -355,23 +339,15 @@ code{font-family:var(--fm);font-size:12.5px}
       <div><b id="hs-users">—</b><span>Clashers</span></div>
     </div>
   </div>
-
   <section class="section" id="how">
     <h2>How it works</h2>
     <div class="steps">
-      <article><span>01</span><h3>Connect Phantom</h3><p>Sign a one-time message. Verified by Supabase.</p></article>
-      <article><span>02</span><h3>Link your X</h3><p>OAuth 2.0. We only store your handle.</p></article>
-      <article><span>03</span><h3>Submit a post</h3><p>Paste a public X URL. Format validated.</p></article>
-      <article><span>04</span><h3>Clash</h3><p>Two posts enter. The community votes. Backend settles.</p></article>
+      <article><span>01</span><h3>Connect Phantom</h3><p>Sign a message. Verified in your browser.</p></article>
+      <article><span>02</span><h3>Submit a post</h3><p>Paste a public X URL. Format validated.</p></article>
+      <article><span>03</span><h3>Vote</h3><p>Pick the winner in live rounds.</p></article>
+      <article><span>04</span><h3>Clash</h3><p>Backend settles. Winner is final.</p></article>
     </div>
   </section>
-
-  <section class="section" id="tiers">
-    <h2>Holder tiers</h2>
-    <p class="section-sub">Hold the PostClash token to unlock XP multipliers.</p>
-    <div class="tiers" id="landing-tiers"></div>
-  </section>
-
   <footer class="landing-footer">
     <span>POSTCLASH © <span id="yr"></span></span>
     <span class="mono">Solana · Supabase</span>
@@ -387,43 +363,31 @@ code{font-family:var(--fm);font-size:12.5px}
     <nav class="nav">
       <a href="#/arena"       data-nav="arena"><span>◈</span>Arena</a>
       <a href="#/discover"    data-nav="discover"><span>◇</span>Discover</a>
-      <a href="#/predictions" data-nav="predictions"><span>◎</span>Predictions</a>
       <a href="#/leaderboard" data-nav="leaderboard"><span>▲</span>Leaderboard</a>
-      <a href="#/quests"      data-nav="quests"><span>✦</span>Quests</a>
       <a href="#/profile"     data-nav="profile"><span>●</span>Profile</a>
       <a href="#/settings"    data-nav="settings"><span>⚙</span>Settings</a>
     </nav>
     <div class="sidebar-foot">v1.0</div>
   </aside>
-
   <div class="main">
     <header class="topbar">
       <button class="icon-btn only-mobile" id="btn-menu" aria-label="Menu">☰</button>
       <div class="topbar-title" id="view-title">Arena</div>
       <div class="topbar-right">
-        <button class="chip" data-action="go" data-href="#/quests">
-          <span>XP</span><b id="xp-value">0</b>
-        </button>
-        <button class="chip" data-action="go" data-href="#/settings">
-          <span class="tier-dot" id="tier-dot"></span><b id="tier-value">Unranked</b>
-        </button>
         <button class="wallet-pill" id="wallet-pill" data-action="wallet-toggle">
           <span class="wp-dot" id="wp-dot"></span>
           <span class="mono" id="wp-addr">Connect</span>
         </button>
         <button class="avatar" data-action="go" data-href="#/profile" aria-label="Profile">
-          <img id="avatar-img" alt="" hidden />
           <span id="avatar-fallback">?</span>
         </button>
       </div>
     </header>
     <main class="view" id="view"></main>
   </div>
-
   <nav class="mobile-nav">
     <a href="#/arena"       data-nav="arena"><span>◈</span>Arena</a>
     <a href="#/discover"    data-nav="discover"><span>◇</span>Discover</a>
-    <a href="#/predictions" data-nav="predictions"><span>◎</span>Predict</a>
     <a href="#/leaderboard" data-nav="leaderboard"><span>▲</span>Ranks</a>
     <a href="#/profile"     data-nav="profile"><span>●</span>Profile</a>
   </nav>
@@ -436,15 +400,10 @@ code{font-family:var(--fm);font-size:12.5px}
 (function () {
   'use strict';
 
-  /* ─────────────────────────────────────────────────────────
-     CONFIG — paste your Supabase values below
-     Dashboard → Settings → API
-     ───────────────────────────────────────────────────────── */
+  /* ─── CONFIG ─────────────────────────────────────────────── */
   const CONFIG = {
     SUPABASE_URL:      'https://duclhzypwkuiopuaakdm.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_rSNMqsw6_FtNOtoRZQ2obw_JWIJrfHI',
-    ENDING_SOON_SECONDS: 300,
-    XP: { VOTE: 5, PREDICT: 10, CORRECT_PREDICTION: 50, SUBMIT_POST: 25 },
   };
 
   const $  = (s, r = document) => r.querySelector(s);
@@ -469,7 +428,6 @@ code{font-family:var(--fm);font-size:12.5px}
     wallet: null,
     battles: [],
     votes: LS.get('votes', {}),
-    predictions: LS.get('preds', {}),
     profile: null,
   };
 
@@ -513,7 +471,7 @@ code{font-family:var(--fm);font-size:12.5px}
     });
   }
 
-  /* ── Data ─────────────────────────────────────────────── */
+  /* ─── Data ───────────────────────────────────────────────── */
   async function loadBattles() {
     const { data, error } = await State.sb
       .from('battles')
@@ -550,16 +508,9 @@ code{font-family:var(--fm);font-size:12.5px}
 
   async function loadLeaderboard() {
     const { data } = await State.sb.from('profiles')
-      .select('handle, xp, wins, streak, avatar_url')
+      .select('handle, xp, wins, streak')
       .order('xp', { ascending: false }).limit(50);
     return (data || []).map((r, i) => Object.assign({ rank: i+1 }, r));
-  }
-
-  async function loadTiers() {
-    const { data } = await State.sb.from('token_tiers').select('*').order('min_amount');
-    return (data || []).map(t => ({
-      name: t.name, req: t.min_amount, mult: t.xp_multiplier, color: t.color || '#39FF14',
-    }));
   }
 
   async function castVote(battleId, entryId) {
@@ -567,13 +518,6 @@ code{font-family:var(--fm);font-size:12.5px}
     if (error) throw error;
     State.votes[battleId] = entryId;
     LS.set('votes', State.votes);
-  }
-
-  async function castPrediction(battleId, entryId) {
-    const { error } = await State.sb.from('predictions').insert({ battle_id: battleId, entry_id: entryId });
-    if (error) throw error;
-    State.predictions[battleId] = entryId;
-    LS.set('preds', State.predictions);
   }
 
   function subscribeRealtime() {
@@ -592,7 +536,7 @@ code{font-family:var(--fm);font-size:12.5px}
       .subscribe();
   }
 
-  /* ── Wallet (native Web3 auth) ─────────────────────────── */
+  /* ─── Wallet — direct Phantom, no Supabase ──────────────── */
   const Wallet = {
     provider() {
       return window.phantom?.solana?.isPhantom ? window.phantom.solana
@@ -614,29 +558,42 @@ code{font-family:var(--fm);font-size:12.5px}
         const res = await p.connect();
         const address = res.publicKey.toString();
 
-        // Native Supabase Web3 auth — no Edge Functions required
-        const { data, error } = await State.sb.auth.signInWithWeb3({
-          chain: 'solana',
-          statement: 'I accept the PostClash Terms of Service',
-        });
-        if (error) throw error;
+        // Sign a message to prove ownership
+        const message =
+          'PostClash wallet verification\n\n' +
+          'Address: ' + address + '\n' +
+          'Timestamp: ' + Date.now() + '\n\n' +
+          'Signing this message proves you own this wallet.';
 
-        State.wallet = { address, verified: true, tier: 'Unranked', balance: 0 };
+        const encoded = new TextEncoder().encode(message);
+        const signed = await p.signMessage(encoded, 'utf8');
+
+        // Verify locally with tweetnacl
+        const valid = nacl.sign.detached.verify(
+          encoded,
+          signed.signature,
+          res.publicKey.toBytes()
+        );
+
+        if (!valid) {
+          toast('Signature verification failed', 'err');
+          return;
+        }
+
+        State.wallet = { address, verified: true };
         LS.set('wallet', address);
         renderTopbar();
-        await refreshProfile();
         toast('Wallet verified');
+
       } catch (e) {
         if (e && e.code === 4001) toast('Connection rejected', 'warn');
-        else if (e && e.message && e.message.indexOf('Web3') >= 0)
-          toast('Enable Web3 Wallet provider in Supabase Auth', 'err');
         else toast('Wallet error: ' + (e && e.message || 'unknown'), 'err');
+        console.error('[Wallet]', e);
       }
     },
 
     disconnect() {
       try { this.provider() && this.provider().disconnect(); } catch (e) {}
-      try { State.sb.auth.signOut(); } catch (e) {}
       State.wallet = null;
       LS.set('wallet', null);
       renderTopbar();
@@ -645,15 +602,20 @@ code{font-family:var(--fm);font-size:12.5px}
 
     async autoReconnect() {
       const saved = LS.get('wallet', null);
-      if (!saved) return;
-      const { data: { session } } = await State.sb.auth.getSession();
-      if (!session) return;
-      State.wallet = { address: saved, verified: true, tier: 'Unranked', balance: 0 };
-      renderTopbar();
+      const p = this.provider();
+      if (!saved || !p) return;
+      try {
+        const res = await p.connect({ onlyIfTrusted: true });
+        const address = res.publicKey.toString();
+        if (address === saved) {
+          State.wallet = { address, verified: true };
+          renderTopbar();
+        }
+      } catch (e) {}
     },
   };
 
-  /* ── Battle card ──────────────────────────────────────── */
+  /* ─── Battle card ────────────────────────────────────────── */
   function battleStatus(b) {
     const now = Date.now();
     const start = new Date(b.starts_at).getTime();
@@ -661,7 +623,7 @@ code{font-family:var(--fm);font-size:12.5px}
     if (b.status === 'finalized') return { cls: 'finished', label: 'FINISHED' };
     if (b.status === 'cancelled') return { cls: 'finished', label: 'CANCELLED' };
     if (now < start) return { cls: 'finished', label: 'SCHEDULED' };
-    if (end - now <= (CONFIG.ENDING_SOON_SECONDS || 300) * 1000) return { cls: 'ending', label: 'ENDING SOON' };
+    if (end - now <= 300 * 1000) return { cls: 'ending', label: 'ENDING SOON' };
     return { cls: 'live', label: 'LIVE' };
   }
 
@@ -671,7 +633,6 @@ code{font-family:var(--fm);font-size:12.5px}
     const pctA = Math.round((b.votes_a / total) * 100);
     const pctB = 100 - pctA;
     const myVote = State.votes[b.id];
-    const myPred = State.predictions[b.id];
     const finished = b.status === 'finalized';
     const canVote = !finished && !myVote;
 
@@ -718,11 +679,7 @@ code{font-family:var(--fm);font-size:12.5px}
       '</div>' +
       '<div class="react-row">' +
         ['🔥','💎','🚀','🧠'].map(e =>
-          '<button class="react" data-react="' + b.id + '" data-emoji="' + e + '">' + e + '</button>').join('') +
-        '<button class="btn btn-ghost btn-sm" style="margin-left:auto" ' +
-          'data-predict="' + b.id + '" ' + (finished || myPred ? 'disabled' : '') + '>' +
-          (myPred ? '🔮 Locked' : '🔮 Predict') +
-        '</button>' +
+          '<button class="react" data-react="' + b.id + '">' + e + '</button>').join('') +
       '</div>' +
       '<div class="battle-foot">' +
         b.id.slice(0, 16) + ' · ' + fmt(total) + ' votes' +
@@ -739,7 +696,7 @@ code{font-family:var(--fm);font-size:12.5px}
     el.replaceWith(wrap.firstElementChild);
   }
 
-  /* ── Views ────────────────────────────────────────────── */
+  /* ─── Views ──────────────────────────────────────────────── */
   async function viewArena() {
     await loadBattles();
     const live = State.battles.filter(b => b.status === 'live');
@@ -750,7 +707,7 @@ code{font-family:var(--fm);font-size:12.5px}
         '<div class="stat"><b>' + live.length + '</b><span>Live battles</span></div>' +
         '<div class="stat"><b>' + fmt(live.reduce((s,b)=>s+b.votes_a+b.votes_b,0)) + '</b><span>Votes in play</span></div>' +
         '<div class="stat"><b>' + done.length + '</b><span>Settled</span></div>' +
-        '<div class="stat"><b>' + fmt(State.profile && State.profile.xp || 0) + '</b><span>Your XP</span></div>' +
+        '<div class="stat"><b>' + Object.keys(State.votes).length + '</b><span>Your votes</span></div>' +
       '</div>' +
       (live.length
         ? '<h2 style="font-size:15px;margin:24px 0 12px">Live now</h2><div>' + live.map(battleCard).join('') + '</div>'
@@ -775,9 +732,6 @@ code{font-family:var(--fm);font-size:12.5px}
         '<button class="btn btn-primary" id="btn-submit-post" ' + (canSubmit ? '' : 'disabled') + '>' +
           (canSubmit ? 'Submit post' : 'Connect wallet first') +
         '</button>' +
-      '</div>' +
-      '<div class="panel"><h3>Your submissions</h3>' +
-        '<div id="my-posts"><div class="empty" style="padding:30px"><p style="margin:0">Loading…</p></div></div>' +
       '</div>';
 
     const inp = $('#post-url');
@@ -800,185 +754,66 @@ code{font-family:var(--fm);font-size:12.5px}
       }
       toast('Post submitted');
       inp.value = '';
-      loadMyPosts();
     });
-
-    loadMyPosts();
-  }
-
-  async function loadMyPosts() {
-    const el = $('#my-posts');
-    if (!el) return;
-    const { data: { user } } = await State.sb.auth.getUser();
-    if (!user) {
-      el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">Connect a wallet to see your submissions.</p></div>';
-      return;
-    }
-    const { data } = await State.sb.from('posts').select('*').eq('user_id', user.id)
-      .order('created_at', { ascending: false }).limit(20);
-    if (!data || !data.length) {
-      el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">No submissions yet.</p></div>';
-      return;
-    }
-    el.innerHTML = data.map(p =>
-      '<div class="row"><div class="row-rank">◇</div><div class="row-main">' +
-      '<div class="row-name">' + esc(p.author || 'Pending') + ' <span class="badge">' + esc(p.status) + '</span></div>' +
-      '<div class="row-sub">' + esc(p.url.slice(0, 60)) + '</div></div></div>').join('');
-  }
-
-  async function viewPredictions() {
-    await loadBattles();
-    const open = State.battles.filter(b => b.status === 'live');
-    $('#view').innerHTML =
-      '<div class="view-head"><h1>Predictions</h1><p>Call the winner before the round ends. No wagers.</p></div>' +
-      '<div class="stats">' +
-        '<div class="stat"><b>' + Object.keys(State.predictions).length + '</b><span>Your predictions</span></div>' +
-        '<div class="stat"><b>' + CONFIG.XP.PREDICT + '</b><span>XP per prediction</span></div>' +
-        '<div class="stat"><b>' + CONFIG.XP.CORRECT_PREDICTION + '</b><span>XP if correct</span></div>' +
-      '</div>' +
-      (open.length ? open.map(b => {
-        const locked = State.predictions[b.id];
-        return '<div class="row"><div class="row-rank">🔮</div>' +
-          '<div class="row-main"><div class="row-name">' +
-            esc(b.entry_a.post && b.entry_a.post.handle || '?') + ' vs ' +
-            esc(b.entry_b.post && b.entry_b.post.handle || '?') + '</div>' +
-          '<div class="row-sub">Ends in ' + countdown(new Date(b.ends_at) - Date.now()) + '</div></div>' +
-          (locked
-            ? '<span class="badge violet">Locked</span>'
-            : '<button class="btn btn-violet btn-sm" data-predict="' + b.id + '">Predict</button>') +
-        '</div>';
-      }).join('') : '<div class="empty"><div class="ico">◎</div><h3>No open battles</h3><p>Predictions open when a round goes live.</p></div>');
   }
 
   async function viewLeaderboard() {
     const rows = await loadLeaderboard();
     $('#view').innerHTML =
-      '<div class="view-head"><h1>Leaderboard</h1><p>Ranked by XP earned through votes, predictions and quests.</p></div>' +
+      '<div class="view-head"><h1>Leaderboard</h1><p>Ranked by XP.</p></div>' +
       (rows.length ? rows.map((r, i) =>
         '<div class="row"><div class="row-rank ' + (i < 3 ? 'top' : '') + '">' + (i+1) + '</div>' +
-        '<div class="row-main"><div class="row-name">' + esc(r.handle || 'anon') +
-          (i === 0 ? ' <span class="badge accent">LEADER</span>' : '') + '</div>' +
+        '<div class="row-main"><div class="row-name">' + esc(r.handle || 'anon') + '</div>' +
         '<div class="row-sub">' + (r.wins || 0) + ' correct · ' + (r.streak || 0) + 'd streak</div></div>' +
         '<div class="row-val">' + fmt(r.xp) + ' XP</div></div>').join('')
-        : '<div class="empty"><div class="ico">▲</div><h3>No players yet</h3>' +
-          '<p>Profiles appear here once users connect their wallets and earn XP.</p></div>');
-  }
-
-  async function viewQuests() {
-    const { data: quests } = await State.sb.from('quests').select('*').eq('active', true);
-    const { data: achs } = await State.sb.from('achievements').select('*');
-    const { data: { user } } = await State.sb.auth.getUser();
-    let prog = [], mine = [];
-    if (user) {
-      const r1 = await State.sb.from('quest_progress').select('*').eq('user_id', user.id);
-      const r2 = await State.sb.from('user_achievements').select('achievement_id').eq('user_id', user.id);
-      prog = r1.data || [];
-      mine = (r2.data || []).map(m => m.achievement_id);
-    }
-
-    $('#view').innerHTML =
-      '<div class="view-head"><h1>Quests & achievements</h1><p>Daily objectives refresh every 24 hours.</p></div>' +
-      '<div class="stats">' +
-        '<div class="stat"><b>' + prog.filter(p => p.completed).length + '/' + (quests || []).length + '</b><span>Quests done</span></div>' +
-        '<div class="stat"><b>' + mine.length + '/' + (achs || []).length + '</b><span>Achievements</span></div>' +
-        '<div class="stat"><b>' + fmt(State.profile && State.profile.xp || 0) + '</b><span>Total XP</span></div>' +
-      '</div>' +
-      '<h2 style="font-size:15px;margin:8px 0 12px">Daily quests</h2>' +
-      ((quests || []).length ? quests.map(q => {
-        const p = prog.find(x => x.quest_id === q.id) || { progress: 0, completed: false };
-        return '<div class="quest ' + (p.completed ? 'done' : '') + '">' +
-          '<div class="quest-ico">' + esc(q.icon) + '</div>' +
-          '<div class="quest-main"><h4>' + esc(q.title) +
-            (p.completed ? ' <span class="badge accent">DONE</span>' : '') + '</h4>' +
-            '<p>' + esc(q.description || '') + '</p>' +
-            '<div class="progress"><i style="width:' + Math.min(100, (p.progress / q.goal) * 100) + '%"></i></div>' +
-          '</div>' +
-          '<div class="quest-xp">+' + q.xp_reward + ' XP</div>' +
-        '</div>';
-      }).join('') : '<div class="empty"><p>No quests configured.</p></div>') +
-      '<h2 style="font-size:15px;margin:32px 0 12px">Achievements</h2>' +
-      ((achs || []).length ? '<div class="ach-grid">' + achs.map(a =>
-        '<div class="ach ' + (mine.indexOf(a.id) >= 0 ? 'on' : '') + '">' +
-          '<div class="ach-ico">' + esc(a.icon) + '</div>' +
-          '<h4>' + esc(a.title) + '</h4><p>' + esc(a.description || '') + '</p>' +
-        '</div>').join('') + '</div>'
-        : '<div class="empty"><p>No achievements configured.</p></div>');
+        : '<div class="empty"><div class="ico">▲</div><h3>No players yet</h3></div>');
   }
 
   async function viewProfile() {
-    if (!State.profile) {
+    if (!State.wallet) {
       $('#view').innerHTML =
-        '<div class="empty"><div class="ico">●</div><h3>Not signed in</h3>' +
-        '<p>Connect your wallet to build a profile.</p>' +
+        '<div class="empty"><div class="ico">●</div><h3>Not connected</h3>' +
+        '<p>Connect your wallet to see your profile.</p>' +
         '<button class="btn btn-primary" data-action="wallet-toggle">Connect Phantom</button></div>';
       return;
     }
-    const p = State.profile;
     $('#view').innerHTML =
       '<div class="profile-head">' +
-        '<div class="p-avatar">' + esc((p.handle || '?')[0].toUpperCase()) + '</div>' +
-        '<div class="p-info"><h1>' + esc(p.handle || 'clasher') + '</h1>' +
-          '<div class="p-handle">' + (State.wallet ? short(State.wallet.address) : 'no wallet') + '</div>' +
+        '<div class="p-avatar">' + esc(State.wallet.address[0].toUpperCase()) + '</div>' +
+        '<div class="p-info"><h1>' + short(State.wallet.address) + '</h1>' +
+          '<div class="p-handle">Solana wallet</div>' +
           '<div class="p-tags">' +
-            '<span class="badge accent">' + esc((State.wallet && State.wallet.tier) || 'Unranked') + '</span>' +
-            '<span class="badge">' + (p.streak || 0) + '🔥 streak</span>' +
+            '<span class="badge accent">Verified</span>' +
+            '<span class="badge">' + Object.keys(State.votes).length + ' votes</span>' +
           '</div>' +
         '</div>' +
-        '<div style="margin-left:auto;text-align:right">' +
-          '<div style="font-size:30px;font-weight:700;letter-spacing:-.03em">' + fmt(p.xp) + '</div>' +
-          '<div style="font-size:11px;color:var(--dim);font-family:var(--fm);text-transform:uppercase">Total XP</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="stats">' +
-        '<div class="stat"><b>' + (p.wins || 0) + '</b><span>Correct predictions</span></div>' +
       '</div>';
   }
 
   async function viewSettings() {
-    const tiers = await loadTiers();
-    const holder = (State.wallet && State.wallet.balance) || 0;
-    const current = [].concat(tiers).reverse().find(t => holder >= t.req)
-                 || (tiers[0] || { name: 'Unranked', color: '#5A635A', mult: 1 });
-
     $('#view').innerHTML =
-      '<div class="view-head"><h1>Settings</h1><p>Wallet, tiers and configuration.</p></div>' +
-      '<div class="panel"><h3>Supabase</h3>' +
-        '<div class="row"><div class="row-main">' +
-          '<div class="row-name">✅ Connected</div>' +
-          '<div class="row-sub">' + esc(CONFIG.SUPABASE_URL) + '</div>' +
-        '</div></div>' +
-      '</div>' +
+      '<div class="view-head"><h1>Settings</h1><p>Wallet and configuration.</p></div>' +
       '<div class="panel"><h3>Phantom wallet</h3>' +
         '<div class="row"><div class="row-main">' +
           '<div class="row-name">' + (State.wallet ? short(State.wallet.address) : 'Not connected') + '</div>' +
-          '<div class="row-sub">' + (State.wallet && State.wallet.verified ? 'Signature verified' : 'Unverified') + '</div>' +
+          '<div class="row-sub">' + (State.wallet && State.wallet.verified ? 'Signature verified' : 'Not connected') + '</div>' +
         '</div>' +
         '<button class="btn btn-sm ' + (State.wallet ? 'btn-danger' : 'btn-primary') + '" data-action="wallet-toggle">' +
           (State.wallet ? 'Disconnect' : 'Connect') +
         '</button></div>' +
-        (!Wallet.available() ? '<p class="hint">Phantom extension not detected.</p>' : '') +
       '</div>' +
-      '<div class="panel"><h3>Token tier</h3>' +
-        '<p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">' +
-          'Current: <b style="color:' + current.color + '">' + esc(current.name) + '</b> · ' +
-          fmt(holder) + ' tokens · ' + current.mult + '× XP' +
-        '</p>' +
-        tiers.map(t =>
-          '<div class="row"><div class="row-rank" style="background:' + t.color + '22;color:' + t.color + '">' +
-            (t.req >= 1000 ? fmt(t.req) : t.req) + '</div>' +
-            '<div class="row-main"><div class="row-name" style="color:' + t.color + '">' + esc(t.name) + '</div>' +
-            '<div class="row-sub">Minimum ' + fmt(t.req) + ' tokens</div></div>' +
-            '<div class="row-val" style="color:' + t.color + '">' + t.mult + '×</div>' +
-          '</div>').join('') +
+      '<div class="panel"><h3>Database</h3>' +
+        '<div class="row"><div class="row-main">' +
+          '<div class="row-name">✅ Supabase connected</div>' +
+          '<div class="row-sub">' + esc(CONFIG.SUPABASE_URL) + '</div>' +
+        '</div></div>' +
       '</div>';
   }
 
   const ROUTES = {
     arena:       { title: 'Arena',       render: viewArena },
     discover:    { title: 'Discover',    render: viewDiscover },
-    predictions: { title: 'Predictions', render: viewPredictions },
     leaderboard: { title: 'Leaderboard', render: viewLeaderboard },
-    quests:      { title: 'Quests',      render: viewQuests },
     profile:     { title: 'Profile',     render: viewProfile },
     settings:    { title: 'Settings',    render: viewSettings },
   };
@@ -1004,32 +839,12 @@ code{font-family:var(--fm);font-size:12.5px}
     const pill = $('#wallet-pill');
     pill.classList.toggle('connected', !!w);
     $('#wp-addr').textContent = w ? short(w.address) : 'Connect';
-    $('#wp-dot').style.background = w ? (w.verified ? 'var(--accent)' : 'var(--warn)') : 'var(--dim)';
-    const tier = (w && w.tier) || 'Unranked';
-    $('#tier-value').textContent = tier;
-    const colors = { Unranked:'#5A635A', Bronze:'#C08050', Silver:'#B8C4C0', Gold:'#FFB020', Diamond:'#39FF14' };
-    $('#tier-dot').style.background = colors[tier] || 'var(--dim)';
-    $('#xp-value').textContent = fmt(State.profile && State.profile.xp || 0);
-    const p = State.profile;
-    if (p && p.avatar_url) {
-      $('#avatar-img').src = p.avatar_url;
-      $('#avatar-img').hidden = false;
-      $('#avatar-fallback').hidden = true;
-    } else {
-      $('#avatar-fallback').textContent = ((p && p.handle) || '?')[0].toUpperCase();
-    }
-  }
-
-  async function refreshProfile() {
-    const { data: { user } } = await State.sb.auth.getUser();
-    if (!user) { renderTopbar(); return; }
-    const { data } = await State.sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
-    State.profile = data || null;
-    renderTopbar();
+    $('#wp-dot').style.background = w ? 'var(--accent)' : 'var(--dim)';
+    $('#avatar-fallback').textContent = w ? w.address[0].toUpperCase() : '?';
   }
 
   document.addEventListener('click', async e => {
-    const t = e.target.closest('[data-action], [data-vote], [data-react], [data-predict]');
+    const t = e.target.closest('[data-action], [data-vote], [data-react]');
     if (!t) return;
     const action = t.dataset.action;
     if (action === 'go') { location.hash = t.dataset.href; return; }
@@ -1058,33 +873,6 @@ code{font-family:var(--fm);font-size:12.5px}
       t.classList.toggle('on');
       return;
     }
-    if (t.dataset.predict) {
-      if (!State.wallet) { toast('Connect your wallet to predict', 'warn'); return; }
-      const b = State.battles.find(x => x.id === t.dataset.predict);
-      if (!b) return;
-      modal({
-        title: 'Predict the winner',
-        body: '<p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">' +
-              'Correct predictions earn ' + CONFIG.XP.CORRECT_PREDICTION + ' XP. Cannot be changed.</p>' +
-              '<div style="display:grid;gap:10px">' +
-                '<button class="btn btn-outline" data-pick="' + b.entry_a.id + '">' +
-                  esc(b.entry_a.post && b.entry_a.post.handle || 'Post A') + '</button>' +
-                '<button class="btn btn-outline" data-pick="' + b.entry_b.id + '">' +
-                  esc(b.entry_b.post && b.entry_b.post.handle || 'Post B') + '</button>' +
-              '</div>',
-        actions: [],
-      });
-      $$('[data-pick]').forEach(btn => {
-        btn.onclick = async () => {
-          try {
-            await castPrediction(b.id, btn.dataset.pick);
-            toast('Prediction locked');
-            $('#modal').style.display = 'none'; $('#modal').innerHTML = '';
-            navigate();
-          } catch (err) { toast(err.message, 'err'); }
-        };
-      });
-    }
   });
 
   $('#btn-menu') && $('#btn-menu').addEventListener('click', () => {
@@ -1102,31 +890,26 @@ code{font-family:var(--fm);font-size:12.5px}
     $('#yr').textContent = new Date().getFullYear();
     State.sb = initSupabase();
     if (!State.sb) {
-      $('#boot-note').textContent = 'Supabase SDK failed to load. Check your connection.';
+      $('#boot-note').textContent = 'Supabase SDK failed to load.';
       return;
     }
 
-    try {
-      const tiers = await loadTiers();
-      $('#landing-tiers').innerHTML = tiers.length ? tiers.map(t =>
-        '<div class="tier" style="--tc:' + t.color + '"><h4>' + esc(t.name) + '</h4>' +
-        '<div class="req">' + (t.req === 0 ? 'No minimum' : '≥ ' + fmt(t.req) + ' tokens') + '</div>' +
-        '<div class="mult">' + t.mult + '× <small>XP</small></div></div>').join('')
-        : '<p style="color:var(--muted)">No tiers configured.</p>';
+    // Get a session for RLS (anonymous)
+    const { data: { session } } = await State.sb.auth.getSession();
+    if (!session) {
+      try { await State.sb.auth.signInAnonymously(); } catch (e) { console.warn('Anon signin:', e); }
+    }
 
+    // Landing stats
+    try {
       const { count: bc } = await State.sb.from('battles').select('*', { count: 'exact', head: true }).eq('status', 'live');
       $('#hs-battles').textContent = fmt(bc || 0);
       const { count: vc } = await State.sb.from('votes').select('*', { count: 'exact', head: true });
       $('#hs-votes').textContent = fmt(vc || 0);
       const { count: uc } = await State.sb.from('profiles').select('*', { count: 'exact', head: true });
       $('#hs-users').textContent = fmt(uc || 0);
-    } catch (e) { console.error('Boot stats:', e); }
+    } catch (e) { console.error(e); }
 
-    const { data: { session } } = await State.sb.auth.getSession();
-    if (!session) {
-      try { await State.sb.auth.signInAnonymously(); } catch (e) { console.warn('Anon signin:', e); }
-    }
-    await refreshProfile();
     await Wallet.autoReconnect();
 
     $('#boot').classList.add('gone');
