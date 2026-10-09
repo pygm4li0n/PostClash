@@ -10,9 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
-/* ═══════════════════════════════════════════════════════════════
-   POSTCLASH — STYLES
-   ═══════════════════════════════════════════════════════════════ */
 :root{
   --bg:#080A09; --panel:#111411; --panel-2:#0D100D; --panel-3:#161B16;
   --border:#1E241E; --border-hi:#2F382F;
@@ -23,21 +20,11 @@
   --ff:'Space Grotesk',system-ui,sans-serif;
   --fm:'JetBrains Mono',ui-monospace,monospace;
 }
-
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-
-/* ★ CRITICAL FIX — makes the `hidden` attribute work everywhere.
-   Without this, .boot{display:grid} and .modal-root{display:grid}
-   override <div hidden>, stacking every full-screen section on top
-   of each other → dark, unclickable page. */
 [hidden]{display:none !important}
-
-body{
-  background:var(--bg);color:var(--text);font-family:var(--ff);font-size:15px;
-  line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-  overflow-x:hidden;
-}
+body{background:var(--bg);color:var(--text);font-family:var(--ff);font-size:15px;
+  line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 img{max-width:100%;display:block}
@@ -47,32 +34,27 @@ code{font-family:var(--fm);font-size:12.5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:#1D241D;border-radius:20px}
 
-/* Boot */
 .boot{position:fixed;inset:0;z-index:9999;background:var(--bg);
-  display:grid;place-content:center;justify-items:center;gap:20px;
-  transition:opacity .4s ease}
+  display:grid;place-content:center;justify-items:center;gap:20px;transition:opacity .4s}
 .boot.gone{opacity:0;pointer-events:none;visibility:hidden}
 .boot-brand{display:flex;align-items:center;gap:10px}
 .boot-bar{width:200px;height:2px;background:#1A201A;overflow:hidden;border-radius:2px}
 .boot-bar i{display:block;height:100%;width:40%;background:var(--accent);
   animation:slide 1.2s ease-in-out infinite}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
-.boot-note{font-size:12px;color:var(--dim);font-family:var(--fm);letter-spacing:.06em;
-  text-align:center;max-width:400px}
+.boot-note{font-size:12px;color:var(--dim);font-family:var(--fm);text-align:center;max-width:400px}
 
-/* Brand */
 .brand{display:flex;align-items:center;gap:10px}
 .logo-mark{width:32px;height:32px;border-radius:8px;display:grid;place-content:center;
-  background:var(--accent);color:#04120A;font-weight:700;font-size:13px;letter-spacing:-.04em}
-.logo-word{font-weight:700;font-size:16px;letter-spacing:.02em}
+  background:var(--accent);color:#04120A;font-weight:700;font-size:13px}
+.logo-word{font-weight:700;font-size:16px}
 .logo-word em{font-style:normal;color:var(--accent)}
 .brand-sm .logo-mark{width:28px;height:28px;font-size:11px}
 .brand-sm .logo-word{font-size:14px}
 
-/* Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
   padding:10px 18px;border-radius:var(--r);font-weight:600;font-size:14px;
-  border:1px solid transparent;transition:background .15s,border-color .15s,color .15s}
+  border:1px solid transparent;transition:.15s}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn-primary{background:var(--accent);color:#04120A}
 .btn-primary:hover:not(:disabled){background:#4EFF2A}
@@ -81,17 +63,13 @@ code{font-family:var(--fm);font-size:12.5px}
 .btn-ghost{color:var(--muted)}
 .btn-ghost:hover{color:var(--text);background:var(--panel-3)}
 .btn-violet{background:var(--violet);color:#0B0616}
-.btn-violet:hover:not(:disabled){background:#AE75FF}
 .btn-danger{border:1px solid var(--danger);color:var(--danger)}
-.btn-danger:hover{background:rgba(255,59,92,.1)}
 .btn-lg{padding:13px 26px;font-size:15px}
 .btn-sm{padding:7px 13px;font-size:13px}
-.btn-block{width:100%}
 .icon-btn{width:36px;height:36px;border-radius:var(--r);display:grid;place-content:center;
   font-size:16px;color:var(--muted);border:1px solid var(--border)}
 .icon-btn:hover{color:var(--text);border-color:var(--border-hi)}
 
-/* Landing */
 .landing{min-height:100vh;display:flex;flex-direction:column}
 .landing-nav{display:flex;align-items:center;justify-content:space-between;
   padding:18px clamp(20px,5vw,64px);border-bottom:1px solid var(--border);
@@ -109,16 +87,14 @@ code{font-family:var(--fm);font-size:12.5px}
 .hero-sub{max-width:560px;color:var(--muted);font-size:clamp(15px,1.6vw,17px);margin-bottom:34px}
 .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:60px}
 .hero-stats{display:flex;gap:clamp(28px,5vw,64px);flex-wrap:wrap}
-.hero-stats b{display:block;font-size:clamp(26px,3.6vw,40px);font-weight:700;
-  letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.hero-stats b{display:block;font-size:clamp(26px,3.6vw,40px);font-weight:700;font-variant-numeric:tabular-nums}
 .hero-stats span{font-size:11px;color:var(--dim);text-transform:uppercase;
   letter-spacing:.12em;font-family:var(--fm)}
 .section{padding:clamp(50px,7vw,90px) clamp(20px,5vw,64px);border-top:1px solid var(--border)}
 .section h2{font-size:clamp(24px,3.2vw,34px);letter-spacing:-.025em;margin-bottom:10px}
 .section-sub{color:var(--muted);max-width:620px;margin-bottom:36px}
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
-.steps article{background:var(--panel);border:1px solid var(--border);
-  border-radius:var(--r);padding:24px 20px}
+.steps article{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:24px 20px}
 .steps span{font-family:var(--fm);font-size:12px;color:var(--accent);letter-spacing:.1em}
 .steps h3{font-size:15px;margin:12px 0 6px}
 .steps p{font-size:13.5px;color:var(--muted)}
@@ -134,46 +110,41 @@ code{font-family:var(--fm);font-size:12.5px}
   border-top:1px solid var(--border);display:flex;justify-content:space-between;
   gap:16px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
 
-/* App shell */
 .app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
 .sidebar{background:var(--panel-2);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:20px 14px;gap:24px;
-  position:sticky;top:0;height:100vh}
+  display:flex;flex-direction:column;padding:20px 14px;gap:24px;position:sticky;top:0;height:100vh}
 .nav{display:flex;flex-direction:column;gap:2px}
 .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r);
-  color:var(--muted);font-size:14px;font-weight:500;transition:background .15s,color .15s}
+  color:var(--muted);font-size:14px;font-weight:500;transition:.15s}
 .nav a span:first-child{font-size:13px;width:16px;text-align:center;opacity:.75}
 .nav a:hover{background:var(--panel-3);color:var(--text)}
 .nav a.active{background:rgba(57,255,20,.08);color:var(--accent)}
 .sidebar-foot{margin-top:auto;font-size:11px;color:var(--dim);text-align:center;font-family:var(--fm)}
 .main{display:flex;flex-direction:column;min-width:0}
 .topbar{height:60px;display:flex;align-items:center;gap:14px;padding:0 20px;
-  border-bottom:1px solid var(--border);background:var(--bg);
-  position:sticky;top:0;z-index:15}
+  border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:15}
 .topbar-title{font-weight:600;font-size:15px}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 .chip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;
-  border-radius:100px;border:1px solid var(--border);font-size:12.5px;
-  color:var(--muted);transition:.15s}
+  border-radius:100px;border:1px solid var(--border);font-size:12.5px;color:var(--muted)}
 .chip:hover{border-color:var(--border-hi);color:var(--text)}
 .chip b{color:var(--text);font-family:var(--fm)}
 .chip span:first-child{font-family:var(--fm);font-size:10px;letter-spacing:.1em;color:var(--dim)}
 .tier-dot{width:7px;height:7px;border-radius:50%;background:var(--dim);display:inline-block}
 .wallet-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;
-  border-radius:100px;border:1px solid var(--border-hi);font-size:12.5px;transition:.15s}
+  border-radius:100px;border:1px solid var(--border-hi);font-size:12.5px}
 .wallet-pill:hover{border-color:var(--accent);color:var(--accent)}
 .wallet-pill.connected{border-color:rgba(57,255,20,.4);color:var(--accent)}
 .wp-dot{width:7px;height:7px;border-radius:50%;background:var(--dim)}
 .wallet-pill.connected .wp-dot{background:var(--accent)}
 .avatar{width:34px;height:34px;border-radius:50%;border:1px solid var(--border-hi);
   display:grid;place-content:center;font-size:13px;font-weight:600;color:var(--muted);
-  overflow:hidden;background:var(--panel-3);transition:.15s}
+  overflow:hidden;background:var(--panel-3)}
 .avatar:hover{border-color:var(--accent)}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .view{padding:26px clamp(16px,3vw,32px) 90px;flex:1;max-width:1400px;width:100%}
 .mobile-nav{display:none}
 
-/* Shared view bits */
 .view-head{margin-bottom:24px}
 .view-head h1{font-size:clamp(22px,3vw,30px);letter-spacing:-.025em;margin-bottom:4px}
 .view-head p{color:var(--muted);font-size:14px;max-width:660px}
@@ -186,9 +157,7 @@ code{font-family:var(--fm);font-size:12.5px}
 .empty h3{color:var(--text);font-size:16px;margin-bottom:6px}
 .empty p{font-size:13.5px;max-width:420px;margin:0 auto 18px}
 
-/* Battle card */
-.battle{background:var(--panel);border:1px solid var(--border);
-  border-radius:var(--r-lg);overflow:hidden}
+.battle{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
 .battle + .battle{margin-top:14px}
 .battle-head{display:flex;align-items:center;gap:12px;padding:12px 18px;
   border-bottom:1px solid var(--border);background:var(--panel-2)}
@@ -220,7 +189,7 @@ code{font-family:var(--fm);font-size:12.5px}
 .side-link:hover{color:var(--accent)}
 .votebar{height:6px;border-radius:100px;background:var(--panel-3);overflow:hidden;
   display:flex;margin:0 18px 16px}
-.votebar i{display:block;height:100%;transition:width .4s ease}
+.votebar i{display:block;height:100%;transition:width .4s}
 .vb-a{background:var(--accent)}
 .vb-b{background:var(--violet)}
 .vote-stats{display:flex;justify-content:space-between;font-size:12.5px;
@@ -242,7 +211,6 @@ code{font-family:var(--fm);font-size:12.5px}
   border-top:1px solid var(--border);background:var(--panel-2);font-size:12px;
   color:var(--dim);font-family:var(--fm)}
 
-/* Rows */
 .row{display:flex;align-items:center;gap:14px;padding:14px 18px;
   border:1px solid var(--border);border-radius:var(--r);background:var(--panel)}
 .row + .row{margin-top:8px}
@@ -259,28 +227,22 @@ code{font-family:var(--fm);font-size:12.5px}
 .badge.accent{color:var(--accent);border-color:rgba(57,255,20,.35);background:rgba(57,255,20,.06)}
 .badge.violet{color:var(--violet);border-color:rgba(155,92,255,.35);background:rgba(155,92,255,.06)}
 
-/* Forms */
 .field{margin-bottom:16px}
 .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;
   text-transform:uppercase;letter-spacing:.09em;font-family:var(--fm)}
 .input{width:100%;padding:11px 14px;border-radius:var(--r);border:1px solid var(--border);
-  background:var(--panel-2);color:var(--text);font-size:14px;font-family:inherit;transition:.15s}
+  background:var(--panel-2);color:var(--text);font-size:14px;font-family:inherit}
 .input:focus{outline:none;border-color:var(--accent)}
 .input.err{border-color:var(--danger)}
 .hint{font-size:12px;color:var(--dim);margin-top:6px}
 .hint.err{color:var(--danger)}
 
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:12px;margin-bottom:20px}
-.stat{background:var(--panel);border:1px solid var(--border);
-  border-radius:var(--r);padding:16px 18px}
-.stat b{display:block;font-size:24px;font-weight:700;letter-spacing:-.03em;
-  font-variant-numeric:tabular-nums;margin-bottom:2px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
+.stat b{display:block;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:2px}
 .stat span{font-size:11px;color:var(--dim);text-transform:uppercase;
   letter-spacing:.1em;font-family:var(--fm)}
 
-/* Quests */
 .quest{display:flex;gap:16px;align-items:center;padding:16px;
   border:1px solid var(--border);border-radius:var(--r);background:var(--panel)}
 .quest + .quest{margin-top:10px}
@@ -291,60 +253,49 @@ code{font-family:var(--fm);font-size:12.5px}
 .quest-main h4{font-size:14px;margin-bottom:2px}
 .quest-main p{font-size:12.5px;color:var(--muted)}
 .progress{height:5px;border-radius:100px;background:var(--panel-3);overflow:hidden;margin-top:8px}
-.progress i{display:block;height:100%;background:var(--accent);
-  border-radius:100px;transition:width .5s ease}
-.quest-xp{font-family:var(--fm);font-size:13px;color:var(--accent);
-  font-weight:600;white-space:nowrap}
+.progress i{display:block;height:100%;background:var(--accent);border-radius:100px;transition:width .5s}
+.quest-xp{font-family:var(--fm);font-size:13px;color:var(--accent);font-weight:600;white-space:nowrap}
 .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
 .ach{text-align:center;padding:18px 12px;border:1px solid var(--border);
-  border-radius:var(--r);background:var(--panel);opacity:.4;transition:.2s}
+  border-radius:var(--r);background:var(--panel);opacity:.4}
 .ach.on{opacity:1;border-color:rgba(57,255,20,.3);background:rgba(57,255,20,.03)}
 .ach-ico{font-size:24px;margin-bottom:8px}
 .ach h4{font-size:12.5px;margin-bottom:2px}
 .ach p{font-size:11px;color:var(--dim)}
 
-/* Profile */
-.profile-head{display:flex;gap:22px;align-items:center;flex-wrap:wrap;
-  padding:24px;border:1px solid var(--border);border-radius:var(--r-lg);
-  background:var(--panel);margin-bottom:18px}
-.p-avatar{width:72px;height:72px;border-radius:50%;
-  border:2px solid var(--border-hi);display:grid;place-content:center;
-  font-size:24px;font-weight:700;color:var(--accent);
+.profile-head{display:flex;gap:22px;align-items:center;flex-wrap:wrap;padding:24px;
+  border:1px solid var(--border);border-radius:var(--r-lg);background:var(--panel);margin-bottom:18px}
+.p-avatar{width:72px;height:72px;border-radius:50%;border:2px solid var(--border-hi);
+  display:grid;place-content:center;font-size:24px;font-weight:700;color:var(--accent);
   background:var(--panel-3);flex:none}
 .p-info{flex:1;min-width:200px}
 .p-info h1{font-size:22px;letter-spacing:-.025em;margin-bottom:4px}
 .p-info .p-handle{font-family:var(--fm);font-size:13px;color:var(--dim);margin-bottom:10px}
 .p-tags{display:flex;gap:8px;flex-wrap:wrap}
 
-/* Modal */
 .modal-root{position:fixed;inset:0;z-index:200;display:grid;place-items:center;
   background:rgba(4,6,4,.85);padding:20px}
-.modal{background:var(--panel);border:1px solid var(--border-hi);
-  border-radius:var(--r-lg);width:min(520px,100%);max-height:86vh;overflow:auto}
-.modal-head{display:flex;align-items:center;gap:12px;padding:16px 20px;
-  border-bottom:1px solid var(--border)}
+.modal{background:var(--panel);border:1px solid var(--border-hi);border-radius:var(--r-lg);
+  width:min(520px,100%);max-height:86vh;overflow:auto}
+.modal-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border)}
 .modal-head h3{font-size:16px;flex:1}
 .modal-body{padding:20px}
-.modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;
-  border-top:1px solid var(--border)}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--border)}
 
-/* Toast */
-.toast-root{position:fixed;bottom:20px;right:20px;z-index:300;
-  display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{background:var(--panel-3);border:1px solid var(--border-hi);
-  border-left:3px solid var(--accent);border-radius:var(--r);
-  padding:12px 16px;font-size:13.5px;max-width:340px;
-  pointer-events:auto;animation:in .2s ease}
+.toast-root{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;
+  flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--panel-3);border:1px solid var(--border-hi);border-left:3px solid var(--accent);
+  border-radius:var(--r);padding:12px 16px;font-size:13.5px;max-width:340px;
+  pointer-events:auto;animation:in .2s}
 .toast.err{border-left-color:var(--danger)}
 .toast.warn{border-left-color:var(--warn)}
 @keyframes in{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
 
-/* Responsive */
 .only-mobile{display:none}
 @media (max-width:980px){
   .app{grid-template-columns:1fr}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;z-index:100;
-    transform:translateX(-100%);transition:transform .25s ease}
+    transform:translateX(-100%);transition:transform .25s}
   .sidebar.open{transform:none}
   .only-mobile{display:grid}
   .topbar{padding:0 14px}
@@ -357,8 +308,7 @@ code{font-family:var(--fm);font-size:12.5px}
   .mobile-nav a.active{color:var(--accent)}
   .chip{display:none}
   .arena{grid-template-columns:1fr}
-  .arena-vs{padding:12px 0;border-top:1px solid var(--border);
-    border-bottom:1px solid var(--border)}
+  .arena-vs{padding:12px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
   .toast-root{left:14px;right:14px;bottom:80px}
   .landing-links a{display:none}
 }
@@ -366,7 +316,6 @@ code{font-family:var(--fm);font-size:12.5px}
 </head>
 <body>
 
-<!-- BOOT -->
 <div id="boot" class="boot">
   <div class="boot-brand">
     <span class="logo-mark">PC</span>
@@ -376,7 +325,6 @@ code{font-family:var(--fm);font-size:12.5px}
   <p id="boot-note" class="boot-note">Connecting…</p>
 </div>
 
-<!-- LANDING -->
 <section id="landing" class="landing" hidden>
   <header class="landing-nav">
     <div class="brand">
@@ -411,7 +359,7 @@ code{font-family:var(--fm);font-size:12.5px}
   <section class="section" id="how">
     <h2>How it works</h2>
     <div class="steps">
-      <article><span>01</span><h3>Connect Phantom</h3><p>Sign a one-time nonce. Ownership verified server-side.</p></article>
+      <article><span>01</span><h3>Connect Phantom</h3><p>Sign a one-time message. Verified by Supabase.</p></article>
       <article><span>02</span><h3>Link your X</h3><p>OAuth 2.0. We only store your handle.</p></article>
       <article><span>03</span><h3>Submit a post</h3><p>Paste a public X URL. Format validated.</p></article>
       <article><span>04</span><h3>Clash</h3><p>Two posts enter. The community votes. Backend settles.</p></article>
@@ -430,7 +378,6 @@ code{font-family:var(--fm);font-size:12.5px}
   </footer>
 </section>
 
-<!-- APP -->
 <div id="app" class="app" hidden>
   <aside class="sidebar" id="sidebar">
     <div class="brand brand-sm">
@@ -482,31 +429,23 @@ code{font-family:var(--fm);font-size:12.5px}
   </nav>
 </div>
 
-<!-- Modal — inline display:none so it can never cover the page even if CSS fails -->
 <div id="modal" class="modal-root" style="display:none"></div>
 <div id="toasts" class="toast-root"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   POSTCLASH — APP
-   ═══════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
   /* ─────────────────────────────────────────────────────────
-     CONFIG — your Supabase values (already filled)
+     CONFIG — paste your Supabase values below
+     Dashboard → Settings → API
      ───────────────────────────────────────────────────────── */
   const CONFIG = {
     SUPABASE_URL:      'https://duclhzypwkuiopuaakdm.supabase.co',
     SUPABASE_ANON_KEY: 'sb_publishable_rSNMqsw6_FtNOtoRZQ2obw_JWIJrfHI',
-    SOLANA_RPC_URL:    'https://api.mainnet-beta.solana.com',
-    TOKEN_MINT:        '',
-    TOKEN_DECIMALS:    6,
     ENDING_SOON_SECONDS: 300,
     XP: { VOTE: 5, PREDICT: 10, CORRECT_PREDICTION: 50, SUBMIT_POST: 25 },
   };
-
-  const IS_CONFIGURED = Boolean(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
 
   const $  = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -535,7 +474,6 @@ code{font-family:var(--fm);font-size:12.5px}
   };
 
   function initSupabase() {
-    if (!IS_CONFIGURED) return null;
     if (!window.supabase || !window.supabase.createClient) return null;
     try {
       return window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY, {
@@ -575,9 +513,8 @@ code{font-family:var(--fm);font-size:12.5px}
     });
   }
 
-  /* ── Data ────────────────────────────────────────────────── */
+  /* ── Data ─────────────────────────────────────────────── */
   async function loadBattles() {
-    if (!State.sb) return [];
     const { data, error } = await State.sb
       .from('battles')
       .select('id, status, starts_at, ends_at, winner, ' +
@@ -612,7 +549,6 @@ code{font-family:var(--fm);font-size:12.5px}
   }
 
   async function loadLeaderboard() {
-    if (!State.sb) return [];
     const { data } = await State.sb.from('profiles')
       .select('handle, xp, wins, streak, avatar_url')
       .order('xp', { ascending: false }).limit(50);
@@ -620,7 +556,6 @@ code{font-family:var(--fm);font-size:12.5px}
   }
 
   async function loadTiers() {
-    if (!State.sb) return [];
     const { data } = await State.sb.from('token_tiers').select('*').order('min_amount');
     return (data || []).map(t => ({
       name: t.name, req: t.min_amount, mult: t.xp_multiplier, color: t.color || '#39FF14',
@@ -642,7 +577,6 @@ code{font-family:var(--fm);font-size:12.5px}
   }
 
   function subscribeRealtime() {
-    if (!State.sb) return;
     State.sb.channel('pc')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'votes' }, p => {
         const b = State.battles.find(x => x.id === p.new.battle_id);
@@ -658,7 +592,7 @@ code{font-family:var(--fm);font-size:12.5px}
       .subscribe();
   }
 
-  /* ── Wallet ──────────────────────────────────────────────── */
+  /* ── Wallet (native Web3 auth) ─────────────────────────── */
   const Wallet = {
     provider() {
       return window.phantom?.solana?.isPhantom ? window.phantom.solana
@@ -679,46 +613,30 @@ code{font-family:var(--fm);font-size:12.5px}
       try {
         const res = await p.connect();
         const address = res.publicKey.toString();
-        State.wallet = { address, verified: false, tier: 'Unranked', balance: 0 };
+
+        // Native Supabase Web3 auth — no Edge Functions required
+        const { data, error } = await State.sb.auth.signInWithWeb3({
+          chain: 'solana',
+          statement: 'I accept the PostClash Terms of Service',
+        });
+        if (error) throw error;
+
+        State.wallet = { address, verified: true, tier: 'Unranked', balance: 0 };
         LS.set('wallet', address);
         renderTopbar();
-        await this.verify(address, p);
+        await refreshProfile();
+        toast('Wallet verified');
       } catch (e) {
         if (e && e.code === 4001) toast('Connection rejected', 'warn');
+        else if (e && e.message && e.message.indexOf('Web3') >= 0)
+          toast('Enable Web3 Wallet provider in Supabase Auth', 'err');
         else toast('Wallet error: ' + (e && e.message || 'unknown'), 'err');
-      }
-    },
-
-    async verify(address, provider) {
-      try {
-        const r1 = await fetch(CONFIG.SUPABASE_URL + '/functions/v1/wallet-nonce', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address }),
-        });
-        if (!r1.ok) throw new Error('nonce request failed');
-        const j1 = await r1.json();
-        const signed = await provider.signMessage(new TextEncoder().encode(j1.message), 'utf8');
-        const sigB64 = btoa(String.fromCharCode.apply(null, signed.signature));
-        const r2 = await fetch(CONFIG.SUPABASE_URL + '/functions/v1/wallet-verify', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address, nonce: j1.nonce, signature: sigB64 }),
-        });
-        if (!r2.ok) throw new Error('verification failed');
-        const v = await r2.json();
-        State.wallet.verified = true;
-        State.wallet.balance = v.balance || 0;
-        State.wallet.tier = v.tier || 'Unranked';
-        renderTopbar();
-        toast('Verified · ' + v.tier + ' tier');
-      } catch (e) {
-        State.wallet.verified = false;
-        toast('Wallet connected — signature verification unavailable', 'warn');
-        renderTopbar();
       }
     },
 
     disconnect() {
       try { this.provider() && this.provider().disconnect(); } catch (e) {}
+      try { State.sb.auth.signOut(); } catch (e) {}
       State.wallet = null;
       LS.set('wallet', null);
       renderTopbar();
@@ -727,21 +645,15 @@ code{font-family:var(--fm);font-size:12.5px}
 
     async autoReconnect() {
       const saved = LS.get('wallet', null);
-      const p = this.provider();
-      if (!saved || !p) return;
-      try {
-        const res = await p.connect({ onlyIfTrusted: true });
-        const address = res.publicKey.toString();
-        if (address === saved) {
-          State.wallet = { address, verified: false, tier: 'Unranked', balance: 0 };
-          renderTopbar();
-          await this.verify(address, p);
-        }
-      } catch (e) {}
+      if (!saved) return;
+      const { data: { session } } = await State.sb.auth.getSession();
+      if (!session) return;
+      State.wallet = { address: saved, verified: true, tier: 'Unranked', balance: 0 };
+      renderTopbar();
     },
   };
 
-  /* ── Battle card ─────────────────────────────────────────── */
+  /* ── Battle card ──────────────────────────────────────── */
   function battleStatus(b) {
     const now = Date.now();
     const start = new Date(b.starts_at).getTime();
@@ -827,7 +739,7 @@ code{font-family:var(--fm);font-size:12.5px}
     el.replaceWith(wrap.firstElementChild);
   }
 
-  /* ── Views ───────────────────────────────────────────────── */
+  /* ── Views ────────────────────────────────────────────── */
   async function viewArena() {
     await loadBattles();
     const live = State.battles.filter(b => b.status === 'live');
@@ -861,7 +773,7 @@ code{font-family:var(--fm);font-size:12.5px}
           '<p class="hint" id="url-hint">Format: https://x.com/&lt;handle&gt;/status/&lt;id&gt;</p>' +
         '</div>' +
         '<button class="btn btn-primary" id="btn-submit-post" ' + (canSubmit ? '' : 'disabled') + '>' +
-          (canSubmit ? 'Submit post' : 'Verify wallet first') +
+          (canSubmit ? 'Submit post' : 'Connect wallet first') +
         '</button>' +
       '</div>' +
       '<div class="panel"><h3>Your submissions</h3>' +
@@ -899,7 +811,7 @@ code{font-family:var(--fm);font-size:12.5px}
     if (!el) return;
     const { data: { user } } = await State.sb.auth.getUser();
     if (!user) {
-      el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">Sign in with a wallet to see your submissions.</p></div>';
+      el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">Connect a wallet to see your submissions.</p></div>';
       return;
     }
     const { data } = await State.sb.from('posts').select('*').eq('user_id', user.id)
@@ -1061,7 +973,6 @@ code{font-family:var(--fm);font-size:12.5px}
       '</div>';
   }
 
-  /* ── Router ──────────────────────────────────────────────── */
   const ROUTES = {
     arena:       { title: 'Arena',       render: viewArena },
     discover:    { title: 'Discover',    render: viewDiscover },
@@ -1110,7 +1021,6 @@ code{font-family:var(--fm);font-size:12.5px}
   }
 
   async function refreshProfile() {
-    if (!State.sb) return;
     const { data: { user } } = await State.sb.auth.getUser();
     if (!user) { renderTopbar(); return; }
     const { data } = await State.sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
@@ -1118,7 +1028,6 @@ code{font-family:var(--fm);font-size:12.5px}
     renderTopbar();
   }
 
-  /* ── Global clicks ───────────────────────────────────────── */
   document.addEventListener('click', async e => {
     const t = e.target.closest('[data-action], [data-vote], [data-react], [data-predict]');
     if (!t) return;
@@ -1189,40 +1098,33 @@ code{font-family:var(--fm);font-size:12.5px}
     });
   }, 1000);
 
-  /* ── Boot ────────────────────────────────────────────────── */
   async function boot() {
     $('#yr').textContent = new Date().getFullYear();
-
-    if (!IS_CONFIGURED) {
-      $('#boot-note').textContent = 'Add SUPABASE_URL and SUPABASE_ANON_KEY to the CONFIG block.';
-      return;
-    }
-
     State.sb = initSupabase();
     if (!State.sb) {
-      $('#boot-note').textContent = 'Supabase failed to load. Check console.';
+      $('#boot-note').textContent = 'Supabase SDK failed to load. Check your connection.';
       return;
     }
 
-    const tiers = await loadTiers();
-    $('#landing-tiers').innerHTML = tiers.length ? tiers.map(t =>
-      '<div class="tier" style="--tc:' + t.color + '"><h4>' + esc(t.name) + '</h4>' +
-      '<div class="req">' + (t.req === 0 ? 'No minimum' : '≥ ' + fmt(t.req) + ' tokens') + '</div>' +
-      '<div class="mult">' + t.mult + '× <small>XP</small></div></div>').join('')
-      : '<p style="color:var(--muted)">No tiers configured.</p>';
-
     try {
+      const tiers = await loadTiers();
+      $('#landing-tiers').innerHTML = tiers.length ? tiers.map(t =>
+        '<div class="tier" style="--tc:' + t.color + '"><h4>' + esc(t.name) + '</h4>' +
+        '<div class="req">' + (t.req === 0 ? 'No minimum' : '≥ ' + fmt(t.req) + ' tokens') + '</div>' +
+        '<div class="mult">' + t.mult + '× <small>XP</small></div></div>').join('')
+        : '<p style="color:var(--muted)">No tiers configured.</p>';
+
       const { count: bc } = await State.sb.from('battles').select('*', { count: 'exact', head: true }).eq('status', 'live');
       $('#hs-battles').textContent = fmt(bc || 0);
       const { count: vc } = await State.sb.from('votes').select('*', { count: 'exact', head: true });
       $('#hs-votes').textContent = fmt(vc || 0);
       const { count: uc } = await State.sb.from('profiles').select('*', { count: 'exact', head: true });
       $('#hs-users').textContent = fmt(uc || 0);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error('Boot stats:', e); }
 
     const { data: { session } } = await State.sb.auth.getSession();
     if (!session) {
-      try { await State.sb.auth.signInAnonymously(); } catch (e) { console.warn(e); }
+      try { await State.sb.auth.signInAnonymously(); } catch (e) { console.warn('Anon signin:', e); }
     }
     await refreshProfile();
     await Wallet.autoReconnect();
