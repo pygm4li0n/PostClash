@@ -314,7 +314,7 @@ code{font-family:var(--fm);font-size:12.5px}
     <h2>How it works</h2>
     <div class="steps">
       <article><span>01</span><h3>Connect Phantom</h3><p>Sign a message. Verified in your browser.</p></article>
-      <article><span>02</span><h3>Submit a post</h3><p>Paste a public X URL. Preview loads automatically.</p></article>
+      <article><span>02</span><h3>Submit a post</h3><p>Paste a public X URL. Preview + images load automatically.</p></article>
       <article><span>03</span><h3>Vote</h3><p>Pick the winner in live rounds.</p></article>
       <article><span>04</span><h3>Clash</h3><p>Backend settles. Winner is final.</p></article>
     </div>
@@ -688,7 +688,7 @@ code{font-family:var(--fm);font-size:12.5px}
         : '');
   }
 
-  /* ─── Preview via fxtwitter ───────────────────────────────── */
+  /* ─── Preview via fxtwitter + images ──────────────────────── */
   async function fetchPostPreview(url) {
     try {
       const match = url.match(/(?:x|twitter)\.com\/([^\/]+)\/status\/(\d+)/);
@@ -705,16 +705,29 @@ code{font-family:var(--fm);font-size:12.5px}
       const t = d.tweet;
       const author = t.author || {};
 
+      // Collect image URLs from media.photos (fxtwitter format)
+      const images = [];
+      if (t.media && Array.isArray(t.media.photos)) {
+        t.media.photos.forEach(p => { if (p && p.url) images.push(p.url); });
+      }
+      // Fallback for media.all if photos empty
+      if (!images.length && t.media && Array.isArray(t.media.all)) {
+        t.media.all.forEach(m => {
+          if (m && m.type === 'photo' && m.url) images.push(m.url);
+        });
+      }
+
       return {
         author: author.name || 'Unknown',
         handle: '@' + (author.screen_name || handle),
         text: t.text || '',
         url,
         avatar_url: author.avatar_url || '',
+        images,
       };
     } catch (e) {
       console.warn('[Preview]', e.message);
-      return null;
+      return { error: e.message };
     }
   }
 
@@ -773,12 +786,16 @@ code{font-family:var(--fm);font-size:12.5px}
       const data = await fetchPostPreview(url);
       if (previewUrl !== url) return;
 
-      if (!data) {
+      if (!data || data.error) {
         preview.innerHTML =
           '<div style="padding:16px;border:1px solid rgba(255,176,32,.35);border-radius:8px;' +
           'background:rgba(255,176,32,.06);color:var(--warn);font-size:13px">' +
-          '⚠ Preview unavailable. You can still submit the URL.</div>';
-        pendingPreview = { url, author: null, handle: null, text: null };
+          '<div style="font-weight:600;margin-bottom:6px">⚠ Preview unavailable</div>' +
+          '<div style="color:var(--dim);font-family:var(--fm);font-size:11.5px">' +
+          esc(data && data.error ? data.error : 'Network error') + '</div>' +
+          '<div style="margin-top:8px;color:var(--muted);font-size:12px">' +
+          'You can still submit — the URL will be saved.</div></div>';
+        pendingPreview = { url, author: null, handle: null, text: null, images: [] };
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit without preview';
         return;
@@ -786,19 +803,39 @@ code{font-family:var(--fm);font-size:12.5px}
 
       pendingPreview = data;
 
+      // Build image grid
+      let imagesHtml = '';
+      if (data.images && data.images.length) {
+        const count = data.images.length;
+        const cols = count === 1 ? '1fr' : '1fr 1fr';
+        imagesHtml =
+          '<div style="display:grid;grid-template-columns:' + cols + ';gap:6px;margin-top:4px">' +
+          data.images.slice(0, 4).map(img =>
+            '<img src="' + esc(img) + '" alt="" loading="lazy" ' +
+            'style="width:100%;border-radius:6px;border:1px solid var(--border);' +
+            'object-fit:cover;max-height:220px;cursor:pointer" ' +
+            'onclick="window.open(this.src,\'_blank\')">'
+          ).join('') +
+          '</div>';
+      }
+
       preview.innerHTML =
         '<div style="border:1px solid var(--border);border-radius:8px;background:var(--panel-2);' +
         'padding:16px;display:flex;flex-direction:column;gap:12px">' +
           '<div style="display:flex;align-items:center;gap:10px">' +
-            '<div style="width:36px;height:36px;border-radius:50%;background:var(--panel-3);' +
-            'display:grid;place-content:center;font-weight:600;font-size:13px;color:var(--muted);' +
-            'border:1px solid var(--border)">' + esc((data.author || '?')[0]) + '</div>' +
+            (data.avatar_url
+              ? '<img src="' + esc(data.avatar_url) + '" alt="" ' +
+                'style="width:36px;height:36px;border-radius:50%;border:1px solid var(--border);object-fit:cover">'
+              : '<div style="width:36px;height:36px;border-radius:50%;background:var(--panel-3);' +
+                'display:grid;place-content:center;font-weight:600;font-size:13px;color:var(--muted);' +
+                'border:1px solid var(--border)">' + esc((data.author || '?')[0]) + '</div>') +
             '<div>' +
               '<div style="font-weight:600;font-size:13.5px">' + esc(data.author) + '</div>' +
               '<div style="font-size:12px;color:var(--dim);font-family:var(--fm)">' + esc(data.handle) + '</div>' +
             '</div>' +
           '</div>' +
-          '<p style="font-size:14px;line-height:1.5;color:var(--text)">' + esc(data.text) + '</p>' +
+          '<p style="font-size:14px;line-height:1.5;color:var(--text);white-space:pre-wrap;margin:0">' + esc(data.text) + '</p>' +
+          imagesHtml +
           '<a href="' + esc(data.url) + '" target="_blank" rel="noopener" ' +
           'style="font-size:11.5px;color:var(--dim);font-family:var(--fm)">View on X ↗</a>' +
         '</div>';
@@ -814,7 +851,6 @@ code{font-family:var(--fm);font-size:12.5px}
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting…';
 
-      // Get the current anonymous user id so we can attach it to the post
       const { data: { user } } = await State.sb.auth.getUser();
 
       const row = {
@@ -829,8 +865,11 @@ code{font-family:var(--fm);font-size:12.5px}
       const { error } = await State.sb.from('posts').insert(row);
 
       if (error) {
+        console.error('[Submit]', error);
         if (error.code === '23505') toast('This post was already submitted', 'warn');
         else if (error.code === '42501') toast('Permission denied — run the SQL fix', 'err');
+        else if (error.message && error.message.toLowerCase().includes('fetch'))
+          toast('Network error — check connection', 'err');
         else toast('Failed: ' + error.message, 'err');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit post';
