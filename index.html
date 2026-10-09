@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>PostClash — Every post has a rival.</title>
 <meta name="theme-color" content="#080A09" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,8 +14,7 @@
 :root{
   --bg:#080A09; --panel:#111411; --panel-2:#0D100D; --panel-3:#161B16;
   --border:#1E241E; --border-hi:#2F382F;
-  --accent:#39FF14; --accent-glow:rgba(57,255,20,.18);
-  --violet:#9B5CFF; --violet-glow:rgba(155,92,255,.18);
+  --accent:#39FF14; --violet:#9B5CFF;
   --text:#E8F0E8; --muted:#8A968A; --dim:#5A635A;
   --danger:#FF3B5C; --warn:#FFB020;
   --r:8px; --r-lg:12px;
@@ -30,189 +29,179 @@ a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 img{max-width:100%;display:block}
 .mono{font-family:var(--fm)}
-code{font-family:var(--fm);font-size:12.5px}
-::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#1D241D;border-radius:20px}
 ::-webkit-scrollbar-thumb:hover{background:#2A332A}
 
-/* ── BOOT ─────────────────────────────────────────── */
+/* BOOT */
 .boot{position:fixed;inset:0;z-index:9999;background:var(--bg);display:grid;
-  place-content:center;justify-items:center;gap:20px;transition:opacity .4s}
+  place-content:center;justify-items:center;gap:16px;transition:opacity .4s}
 .boot.gone{opacity:0;pointer-events:none;visibility:hidden}
-.boot-bar{width:200px;height:2px;background:#1A201A;overflow:hidden;border-radius:2px}
+.boot-brand{display:flex;align-items:center;gap:10px}
+.boot-bar{width:180px;height:2px;background:#1A201A;overflow:hidden;border-radius:2px}
 .boot-bar i{display:block;height:100%;width:40%;background:var(--accent);
   animation:slide 1.2s ease-in-out infinite}
 @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
 
-/* ── LAYOUT ───────────────────────────────────────── */
-body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
-
-.topbar{display:flex;align-items:center;gap:14px;
-  padding:12px 20px;border-bottom:1px solid var(--border);
-  background:rgba(8,10,9,.92);backdrop-filter:blur(12px);z-index:50}
-.brand{display:flex;align-items:center;gap:10px}
-.logo-mark{width:30px;height:30px;border-radius:8px;display:grid;place-content:center;
+/* BRAND */
+.brand{display:flex;align-items:center;gap:9px}
+.logo-mark{width:28px;height:28px;border-radius:7px;display:grid;place-content:center;
   background:linear-gradient(135deg,var(--accent),#1E9E0C);
-  color:#04120A;font-weight:700;font-size:12px;letter-spacing:-.04em}
-.logo-word{font-weight:700;font-size:15px;letter-spacing:.02em}
+  color:#04120A;font-weight:700;font-size:11px;letter-spacing:-.04em}
+.logo-word{font-weight:700;font-size:14px;letter-spacing:.02em}
 .logo-word em{font-style:normal;color:var(--accent)}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.chip{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:100px;
-  border:1px solid var(--border);font-size:12.5px;color:var(--muted);
-  font-family:var(--fm);transition:.15s}
+
+/* APP SHELL */
+.app{display:grid;grid-template-rows:52px minmax(0,1fr);height:100vh}
+
+.topbar{display:flex;align-items:center;gap:12px;padding:0 16px;
+  border-bottom:1px solid var(--border);background:rgba(8,10,9,.94);
+  backdrop-filter:blur(12px);z-index:50}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;
+  border-radius:100px;border:1px solid var(--border);font-size:11.5px;
+  color:var(--muted);font-family:var(--fm);transition:.15s}
 .chip b{color:var(--text);font-weight:600}
-.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--dim);transition:.2s}
+.chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);transition:.2s}
 .chip.connected{border-color:rgba(57,255,20,.4);color:var(--accent)}
 .chip.connected .dot{background:var(--accent);box-shadow:0 0 8px var(--accent)}
-.chip.admin{border-color:rgba(155,92,255,.5);color:var(--violet);background:rgba(155,92,255,.06)}
+.chip.admin{border-color:rgba(155,92,255,.5);color:var(--violet);
+  background:rgba(155,92,255,.06)}
 .chip.admin .dot{background:var(--violet);box-shadow:0 0 8px var(--violet)}
 .chip[data-action]{cursor:pointer}
 .chip[data-action]:hover{border-color:var(--border-hi);color:var(--text)}
 
-.layout{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 400px;
-  gap:14px;
-  padding:14px;
-  min-height:0;
-  overflow:hidden;
-}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;
+  gap:10px;padding:10px;min-height:0;overflow:hidden}
 
-.col-left, .col-right{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  min-height:0;
-  overflow-y:auto;
-  padding-right:4px;
-}
-.col-right{overflow-y:auto}
+.col-left{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:hidden}
+.col-right{display:flex;flex-direction:column;gap:10px;min-height:0;overflow-y:auto;
+  padding-right:2px}
 
-/* ── PANELS ───────────────────────────────────────── */
-.panel{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:var(--r-lg);
-  padding:18px;
-  flex-shrink:0;
-}
-.panel-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-.panel-head h2{font-size:16px;letter-spacing:-.02em;font-weight:700}
-.panel-head .count{
-  font-family:var(--fm);font-size:11px;color:var(--dim);
-  border:1px solid var(--border);padding:2px 8px;border-radius:100px}
-.panel-head p{color:var(--muted);font-size:12.5px;margin-left:auto;font-family:var(--fm)}
+/* PANELS */
+.panel{background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:14px;flex-shrink:0}
+.panel.flex-fill{flex:1;min-height:0;display:flex;flex-direction:column}
+.panel-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.panel-head h2{font-size:14px;letter-spacing:-.02em;font-weight:700}
+.panel-head .count{font-family:var(--fm);font-size:10.5px;color:var(--dim);
+  border:1px solid var(--border);padding:2px 7px;border-radius:100px}
+.panel-head p{color:var(--muted);font-size:11.5px;margin-left:auto;font-family:var(--fm)}
 
-/* ── HERO (compact) ───────────────────────────────── */
-.hero{
-  padding:28px 24px;
-  border:1px solid var(--border);
-  border-radius:var(--r-lg);
-  background:linear-gradient(135deg,#0E110E 0%, #0A0D0A 100%);
-  position:relative;
-  overflow:hidden;
-  flex-shrink:0;
-}
-.hero::before{
-  content:'';position:absolute;top:-50%;right:-30%;width:400px;height:400px;
-  background:radial-gradient(circle, rgba(57,255,20,.08), transparent 70%);
-  pointer-events:none;
-}
-.hero::after{
-  content:'';position:absolute;bottom:-50%;left:-20%;width:400px;height:400px;
-  background:radial-gradient(circle, rgba(155,92,255,.06), transparent 70%);
-  pointer-events:none;
-}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10.5px;
-  font-family:var(--fm);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
-  border:1px solid rgba(57,255,20,.3);padding:4px 11px;border-radius:100px;
-  margin-bottom:18px;position:relative;z-index:1}
-.hero-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);
+/* HERO STRIP */
+.hero-strip{display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:12px 16px;background:linear-gradient(135deg,#0E110E,#0A0D0A);
+  border:1px solid var(--border);border-radius:var(--r-lg);position:relative;
+  overflow:hidden;flex-shrink:0}
+.hero-strip::before{content:'';position:absolute;top:-100px;right:-50px;
+  width:260px;height:260px;
+  background:radial-gradient(circle,rgba(57,255,20,.06),transparent 70%);
+  pointer-events:none}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:9.5px;
+  font-family:var(--fm);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);border:1px solid rgba(57,255,20,.3);
+  padding:3px 9px;border-radius:100px;flex-shrink:0}
+.hero-eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);
   animation:pulse 1.6s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hero-title{font-size:clamp(28px,3.5vw,42px);line-height:1.05;font-weight:700;
-  letter-spacing:-.035em;margin-bottom:10px;position:relative;z-index:1}
-.hero-title em{
-  font-style:normal;
+.hero-mini-title{font-size:20px;font-weight:700;letter-spacing:-.03em;line-height:1.1;
+  flex-shrink:0;position:relative;z-index:1}
+.hero-mini-title em{font-style:normal;
   background:linear-gradient(90deg,var(--accent),#8FEE7C,var(--accent));
-  background-size:200% auto;
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:shine 4s linear infinite;
-}
+  background-size:200% auto;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;animation:shine 4s linear infinite}
 @keyframes shine{to{background-position:200% center}}
-.hero-sub{max-width:520px;color:var(--muted);font-size:14px;margin-bottom:22px;
-  position:relative;z-index:1}
-.hero-stats{display:flex;gap:24px;flex-wrap:wrap;padding-top:18px;
-  border-top:1px solid rgba(255,255,255,.04);position:relative;z-index:1}
-.hero-stats > div > b{display:block;font-size:22px;font-weight:700;
+.hero-mini-stats{display:flex;gap:18px;margin-left:auto;position:relative;z-index:1}
+.hero-mini-stats > div{text-align:right}
+.hero-mini-stats > div > b{display:block;font-size:18px;font-weight:700;
   letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
-.hero-stats > div > span{font-size:10px;color:var(--dim);text-transform:uppercase;
-  letter-spacing:.12em;font-family:var(--fm);margin-top:4px;display:block}
+.hero-mini-stats > div > span{font-size:9.5px;color:var(--dim);text-transform:uppercase;
+  letter-spacing:.1em;font-family:var(--fm)}
 
-/* ── BATTLE CARD ──────────────────────────────────── */
+/* BATTLE TABS */
+.battle-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;flex-shrink:0}
+.battle-tab{width:32px;height:32px;border-radius:var(--r);
+  border:1px solid var(--border);background:var(--panel-2);
+  color:var(--muted);font-family:var(--fm);font-weight:600;font-size:13px;
+  transition:.15s;flex-shrink:0}
+.battle-tab:hover{border-color:var(--border-hi);color:var(--text)}
+.battle-tab.active{background:var(--accent);color:#04120A;border-color:var(--accent);
+  box-shadow:0 0 20px rgba(57,255,20,.25)}
+.battle-tab.finished{opacity:.4}
+.battle-tab.finished.active{background:var(--panel-3);color:var(--text);
+  border-color:var(--border-hi);box-shadow:none}
+
+/* BATTLE STAGE — fills remaining vertical space */
+.battle-stage{flex:1;min-height:0;display:grid;place-items:center;
+  padding:2px 0;overflow:hidden}
+.battle-frame{width:100%;height:100%;max-width:1000px;margin:0 auto;
+  display:flex;flex-direction:column;aspect-ratio:1.05 / 1;
+  max-height:100%}
+.battle-frame > .battle{flex:1;min-height:0;display:flex;flex-direction:column}
+
+/* BATTLE CARD */
 .battle{background:var(--panel);border:1px solid var(--border);
-  border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px;
+  border-radius:var(--r-lg);overflow:hidden;position:relative;
   transition:border-color .2s ease}
-.battle:hover{border-color:var(--border-hi)}
-.battle.live{position:relative}
-.battle.live::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+.battle.live::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,var(--accent),transparent);
-  background-size:200% 100%;
-  animation:sweep 3s linear infinite;
-}
+  background-size:200% 100%;animation:sweep 3s linear infinite;z-index:2}
 @keyframes sweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.battle-head{display:flex;align-items:center;gap:12px;padding:12px 16px;
-  border-bottom:1px solid var(--border);background:var(--panel-2)}
-.status{font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-  padding:4px 10px;border-radius:100px;border:1px solid}
+.battle-head{display:flex;align-items:center;gap:10px;padding:8px 14px;
+  border-bottom:1px solid var(--border);background:var(--panel-2);flex-shrink:0}
+.status{font-family:var(--fm);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;padding:3px 9px;border-radius:100px;border:1px solid}
 .status.live{color:var(--accent);border-color:rgba(57,255,20,.35);
   background:rgba(57,255,20,.07)}
 .status.live::before{content:'●';margin-right:5px;animation:pulse 1.4s infinite}
 .status.ending{color:var(--warn);border-color:rgba(255,176,32,.35);
   background:rgba(255,176,32,.07)}
 .status.finished{color:var(--dim);border-color:var(--border-hi);background:var(--panel-3)}
-.battle-timer{margin-left:auto;font-family:var(--fm);font-size:13px;
+.battle-timer{margin-left:auto;font-family:var(--fm);font-size:12px;
   color:var(--muted);font-variant-numeric:tabular-nums}
 .battle-timer b{color:var(--text);font-weight:600}
-.arena{display:grid;grid-template-columns:1fr auto 1fr}
-.arena-vs{display:grid;place-content:center;padding:0 14px;
-  font-family:var(--fm);font-size:12px;font-weight:600;
-  color:var(--dim);letter-spacing:.12em}
-.side{padding:16px;display:flex;flex-direction:column;gap:11px;position:relative;
-  transition:background .2s ease}
+.arena{flex:1;min-height:0;display:grid;grid-template-columns:1fr auto 1fr}
+.arena-vs{display:grid;place-content:center;padding:0 12px;
+  font-family:var(--fm);font-size:12px;font-weight:600;color:var(--dim);
+  letter-spacing:.12em;background:var(--panel-2);position:relative}
+.arena-vs::before,.arena-vs::after{content:'';position:absolute;left:50%;
+  transform:translateX(-50%);width:1px;height:calc(50% - 20px);
+  background:linear-gradient(to bottom,transparent,var(--border-hi))}
+.arena-vs::before{top:0}
+.arena-vs::after{bottom:0;background:linear-gradient(to top,transparent,var(--border-hi))}
+.side{padding:14px;display:flex;flex-direction:column;gap:9px;position:relative;
+  overflow:hidden;min-width:0}
 .side.winner{background:rgba(57,255,20,.04)}
-.side.winner::after{content:'WINNER';position:absolute;top:12px;right:12px;
+.side.winner::after{content:'WINNER';position:absolute;top:10px;right:10px;
   font-family:var(--fm);font-size:9px;letter-spacing:.14em;color:var(--accent);
-  border:1px solid rgba(57,255,20,.4);padding:2px 7px;border-radius:100px;
-  background:rgba(57,255,20,.08)}
-.side-author{display:flex;align-items:center;gap:10px}
-.side-av{width:36px;height:36px;border-radius:50%;background:var(--panel-3);flex:none;
-  display:grid;place-content:center;font-weight:600;font-size:13px;color:var(--muted);
-  border:1px solid var(--border);overflow:hidden}
+  border:1px solid rgba(57,255,20,.4);padding:2px 6px;border-radius:100px;
+  background:rgba(57,255,20,.08);z-index:2}
+.side-author{display:flex;align-items:center;gap:8px;min-width:0}
+.side-av{width:32px;height:32px;border-radius:50%;background:var(--panel-3);
+  flex:none;display:grid;place-content:center;font-weight:600;font-size:12px;
+  color:var(--muted);border:1px solid var(--border);overflow:hidden}
 .side-av img{width:100%;height:100%;object-fit:cover}
-.side-name{font-size:13px;font-weight:600;line-height:1.2}
-.side-handle{font-size:11px;color:var(--dim);font-family:var(--fm)}
-.side-text{font-size:13px;color:var(--text);line-height:1.5;flex:1;
-  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
-  overflow:hidden;white-space:pre-wrap}
+.side-name{font-size:12.5px;font-weight:600;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-handle{font-size:10.5px;color:var(--dim);font-family:var(--fm);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-text{font-size:12.5px;color:var(--text);line-height:1.5;flex:1;
+  min-height:0;overflow:hidden;white-space:pre-wrap;
+  display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical}
 .side-img{width:100%;border-radius:6px;border:1px solid var(--border);
-  object-fit:cover;max-height:140px;cursor:pointer;transition:transform .2s}
+  object-fit:cover;max-height:110px;cursor:pointer;transition:transform .2s;
+  flex-shrink:0}
 .side-img:hover{transform:scale(1.02)}
-.side-link{font-size:11px;color:var(--dim);font-family:var(--fm)}
+.side-link{font-size:10px;color:var(--dim);font-family:var(--fm);flex-shrink:0}
 .side-link:hover{color:var(--accent)}
-.votebar{height:5px;border-radius:100px;background:var(--panel-3);overflow:hidden;
-  display:flex;margin:0 16px 14px}
-.votebar i{display:block;height:100%;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.vb-a{background:linear-gradient(90deg,#2BC40F,var(--accent))}
-.vb-b{background:linear-gradient(90deg,#7B42E8,var(--violet))}
-.vote-stats{display:flex;justify-content:space-between;font-size:12px;
+.side-vote-stack{margin-top:auto;display:flex;flex-direction:column;gap:8px;
+  flex-shrink:0}
+.vote-stats{display:flex;justify-content:space-between;font-size:11.5px;
   font-family:var(--fm);color:var(--muted);font-variant-numeric:tabular-nums}
 .vote-stats b{color:var(--text)}
-.vote-btn{flex:1;padding:10px;border-radius:var(--r);border:1px solid var(--border-hi);
-  font-weight:600;font-size:13px;color:var(--text);transition:.15s}
+.vote-btn{padding:9px;border-radius:var(--r);border:1px solid var(--border-hi);
+  font-weight:600;font-size:12.5px;color:var(--text);transition:.15s;width:100%}
 .vote-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);
   background:rgba(57,255,20,.05);transform:translateY(-1px)}
 .vote-btn.b:hover:not(:disabled){border-color:var(--violet);color:var(--violet);
@@ -222,20 +211,33 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
   color:var(--accent);cursor:default}
 .vote-btn.voted.b{background:rgba(155,92,255,.12);border-color:var(--violet);
   color:var(--violet)}
-.battle-foot{display:flex;align-items:center;gap:12px;padding:11px 16px;
-  border-top:1px solid var(--border);background:var(--panel-2);font-size:11px;
-  color:var(--dim);font-family:var(--fm)}
+.votebar{height:4px;border-radius:100px;background:var(--panel-3);
+  overflow:hidden;display:flex;margin:0 14px 8px;flex-shrink:0}
+.votebar i{display:block;height:100%;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.vb-a{background:linear-gradient(90deg,#2BC40F,var(--accent))}
+.vb-b{background:linear-gradient(90deg,#7B42E8,var(--violet))}
+.battle-foot{display:flex;align-items:center;gap:10px;padding:8px 14px;
+  border-top:1px solid var(--border);background:var(--panel-2);font-size:10.5px;
+  color:var(--dim);font-family:var(--fm);flex-shrink:0}
 
-/* ── EMPTY ────────────────────────────────────────── */
-.empty{text-align:center;padding:40px 20px;border:1px dashed var(--border);
-  border-radius:var(--r-lg);color:var(--muted);background:var(--panel-2)}
-.empty .ico{font-size:26px;opacity:.4;margin-bottom:10px;color:var(--accent)}
-.empty h3{color:var(--text);font-size:14px;margin-bottom:6px;font-weight:600}
-.empty p{font-size:12.5px;max-width:340px;margin:0 auto;font-family:var(--fm)}
+/* SETTLED STRIP */
+.settled-strip{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;
+  padding-top:10px;border-top:1px solid var(--border);flex-shrink:0}
+.settled-item{display:flex;align-items:center;gap:6px;padding:5px 10px;
+  background:var(--panel-2);border:1px solid var(--border);border-radius:100px;
+  font-size:10.5px;font-family:var(--fm);color:var(--muted);white-space:nowrap}
 
-/* ── BUTTONS ──────────────────────────────────────── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  padding:10px 18px;border-radius:var(--r);font-weight:600;font-size:13.5px;
+/* EMPTY */
+.empty{text-align:center;padding:36px 20px;border:1px dashed var(--border);
+  border-radius:var(--r-lg);color:var(--muted);background:var(--panel-2);
+  width:100%;max-width:440px}
+.empty .ico{font-size:24px;opacity:.4;margin-bottom:8px;color:var(--accent)}
+.empty h3{color:var(--text);font-size:13px;margin-bottom:5px;font-weight:600}
+.empty p{font-size:11.5px;font-family:var(--fm)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px 16px;border-radius:var(--r);font-weight:600;font-size:12.5px;
   border:1px solid transparent;transition:.15s;white-space:nowrap}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn-primary{background:var(--accent);color:#04120A}
@@ -248,97 +250,99 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
 .btn-violet:hover:not(:disabled){background:#AE75FF;transform:translateY(-1px)}
 .btn-danger{border:1px solid var(--danger);color:var(--danger);background:transparent}
 .btn-danger:hover{background:rgba(255,59,92,.08)}
-.btn-sm{padding:6px 12px;font-size:12px;border-radius:6px}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:6px}
 .btn-block{width:100%}
 
-/* ── FORM ─────────────────────────────────────────── */
-.field{margin-bottom:12px}
-.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;
+/* FORM */
+.field{margin-bottom:10px}
+.field label{display:block;font-size:10.5px;color:var(--muted);margin-bottom:5px;
   text-transform:uppercase;letter-spacing:.1em;font-family:var(--fm)}
-.input{width:100%;padding:11px 13px;border-radius:var(--r);
+.input{width:100%;padding:9px 12px;border-radius:var(--r);
   border:1px solid var(--border);background:var(--panel-2);color:var(--text);
-  font-size:13.5px;font-family:inherit;transition:.15s}
+  font-size:12.5px;font-family:inherit;transition:.15s}
 .input:focus{outline:none;border-color:var(--accent);
   box-shadow:0 0 0 3px rgba(57,255,20,.1)}
 .input.err{border-color:var(--danger)}
-.hint{font-size:11px;color:var(--dim);margin-top:6px;font-family:var(--fm)}
+.hint{font-size:10.5px;color:var(--dim);margin-top:5px;font-family:var(--fm)}
 .hint.err{color:var(--danger)}
 
-.preview{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r);
-  padding:14px;display:flex;flex-direction:column;gap:10px;margin-top:10px;
-  animation:fadeIn .2s ease}
+.preview{background:var(--panel-2);border:1px solid var(--border);
+  border-radius:var(--r);padding:11px;display:flex;flex-direction:column;gap:8px;
+  margin-top:8px;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.preview-head{display:flex;align-items:center;gap:10px}
-.preview-av{width:34px;height:34px;border-radius:50%;background:var(--panel-3);
-  flex:none;display:grid;place-content:center;font-weight:600;font-size:12px;
+.preview-head{display:flex;align-items:center;gap:9px}
+.preview-av{width:30px;height:30px;border-radius:50%;background:var(--panel-3);
+  flex:none;display:grid;place-content:center;font-weight:600;font-size:11px;
   color:var(--muted);border:1px solid var(--border);overflow:hidden}
 .preview-av img{width:100%;height:100%;object-fit:cover}
-.preview-name{font-weight:600;font-size:13px}
-.preview-handle{font-size:11px;color:var(--dim);font-family:var(--fm)}
-.preview-text{font-size:12.5px;line-height:1.5;white-space:pre-wrap;
-  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.preview-name{font-weight:600;font-size:12px}
+.preview-handle{font-size:10.5px;color:var(--dim);font-family:var(--fm)}
+.preview-text{font-size:11.5px;line-height:1.45;white-space:pre-wrap;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .preview-imgs{display:grid;gap:5px}
 .preview-imgs.one{grid-template-columns:1fr}
 .preview-imgs.two{grid-template-columns:1fr 1fr}
 .preview-imgs img{width:100%;border-radius:6px;border:1px solid var(--border);
-  object-fit:cover;max-height:120px;cursor:pointer}
+  object-fit:cover;max-height:100px;cursor:pointer}
 
-/* ── ROWS ─────────────────────────────────────────── */
-.row{display:flex;align-items:center;gap:12px;padding:12px 14px;
+/* ROWS */
+.row{display:flex;align-items:center;gap:9px;padding:9px 11px;
   border:1px solid var(--border);border-radius:var(--r);background:var(--panel-2);
-  transition:.15s;margin-top:8px}
+  transition:.15s;margin-top:6px}
 .row:hover{border-color:var(--border-hi)}
 .row.pick-a{border-color:var(--accent);background:rgba(57,255,20,.06)}
 .row.pick-b{border-color:var(--violet);background:rgba(155,92,255,.06)}
 .row-main{flex:1;min-width:0}
-.row-name{font-weight:600;font-size:13px;display:flex;align-items:center;gap:7px;
+.row-name{font-weight:600;font-size:12px;display:flex;align-items:center;gap:6px;
   flex-wrap:wrap}
-.row-sub{font-size:11px;color:var(--dim);font-family:var(--fm);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
-.badge{font-size:9.5px;font-family:var(--fm);letter-spacing:.08em;text-transform:uppercase;
-  padding:2px 7px;border-radius:100px;border:1px solid var(--border-hi);color:var(--muted)}
+.row-sub{font-size:10.5px;color:var(--dim);font-family:var(--fm);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.badge{font-size:9px;font-family:var(--fm);letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 6px;border-radius:100px;border:1px solid var(--border-hi);color:var(--muted)}
 .badge.accent{color:var(--accent);border-color:rgba(57,255,20,.35);
   background:rgba(57,255,20,.06)}
 .badge.violet{color:var(--violet);border-color:rgba(155,92,255,.35);
   background:rgba(155,92,255,.06)}
 
-/* ── LEADERBOARD ──────────────────────────────────── */
-.leader-row{display:flex;align-items:center;gap:12px;padding:11px 14px;
+/* LEADERBOARD */
+.leader-row{display:flex;align-items:center;gap:10px;padding:8px 12px;
   border-bottom:1px solid var(--border)}
 .leader-row:last-child{border-bottom:none}
-.leader-rank{width:30px;height:30px;border-radius:var(--r);display:grid;
-  place-content:center;font-family:var(--fm);font-weight:600;font-size:12px;
+.leader-rank{width:26px;height:26px;border-radius:6px;display:grid;
+  place-content:center;font-family:var(--fm);font-weight:600;font-size:11px;
   background:var(--panel-3);color:var(--muted);flex:none}
 .leader-rank.top{background:rgba(57,255,20,.1);color:var(--accent);
   border:1px solid rgba(57,255,20,.3)}
 .leader-main{flex:1;min-width:0}
-.leader-wallet{font-family:var(--fm);font-size:12px;font-weight:600;
-  display:flex;align-items:center;gap:7px}
-.leader-sub{font-size:11px;color:var(--dim);font-family:var(--fm);margin-top:2px}
-.leader-val{font-family:var(--fm);font-weight:700;font-size:13px;color:var(--accent)}
+.leader-wallet{font-family:var(--fm);font-size:11.5px;font-weight:600;
+  display:flex;align-items:center;gap:6px}
+.leader-sub{font-size:10px;color:var(--dim);font-family:var(--fm);margin-top:1px}
+.leader-val{font-family:var(--fm);font-weight:700;font-size:12.5px;color:var(--accent)}
 
-/* ── ADMIN BADGE ──────────────────────────────────── */
-.admin-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;
-  font-family:var(--fm);letter-spacing:.1em;text-transform:uppercase;color:var(--violet);
-  border:1px solid rgba(155,92,255,.4);padding:4px 10px;border-radius:100px;
-  background:rgba(155,92,255,.06);margin-bottom:12px}
+/* ADMIN */
+.admin-badge{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;
+  font-family:var(--fm);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--violet);border:1px solid rgba(155,92,255,.4);
+  padding:3px 9px;border-radius:100px;background:rgba(155,92,255,.06);
+  margin-bottom:10px}
 
-/* ── MODAL / TOASTS ───────────────────────────────── */
+/* MODAL */
 .modal-root{position:fixed;inset:0;z-index:200;display:grid;place-items:center;
   background:rgba(4,6,4,.85);padding:20px;backdrop-filter:blur(6px)}
 .modal{background:var(--panel);border:1px solid var(--border-hi);
-  border-radius:var(--r-lg);width:min(520px,100%);max-height:80vh;overflow:auto;
+  border-radius:var(--r-lg);width:min(480px,100%);max-height:80vh;overflow:auto;
   animation:fadeIn .2s ease}
-.modal-head{display:flex;align-items:center;gap:12px;padding:16px 20px;
+.modal-head{display:flex;align-items:center;gap:12px;padding:14px 18px;
   border-bottom:1px solid var(--border)}
-.modal-head h3{font-size:15px;flex:1}
-.modal-body{padding:20px}
+.modal-head h3{font-size:14px;flex:1}
+.modal-body{padding:18px}
 
-.toast-root{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;
-  flex-direction:column;gap:8px;pointer-events:none}
+/* TOASTS */
+.toast-root{position:fixed;bottom:16px;right:16px;z-index:300;
+  display:flex;flex-direction:column;gap:7px;pointer-events:none}
 .toast{background:var(--panel-3);border:1px solid var(--border-hi);
   border-left:3px solid var(--accent);border-radius:var(--r);
-  padding:12px 16px;font-size:13px;max-width:340px;font-weight:500;
+  padding:10px 14px;font-size:12.5px;max-width:300px;font-weight:500;
   pointer-events:auto;animation:slideIn .2s ease;
   box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .toast.err{border-left-color:var(--danger)}
@@ -346,22 +350,37 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
 .toast.violet{border-left-color:var(--violet)}
 @keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
 
-/* ── RESPONSIVE ───────────────────────────────────── */
+/* ── MOBILE ────────────────────────────────────────── */
 @media (max-width:980px){
   html,body{overflow:auto;height:auto}
-  body > div.app{height:auto;display:block}
-  .layout{grid-template-columns:1fr;padding:12px;gap:12px}
-  .col-left,.col-right{overflow:visible;padding-right:0}
-  .hero{padding:24px 18px}
-  .hero-title{font-size:34px}
-  .arena{grid-template-columns:1fr}
-  .arena-vs{padding:12px 0;border-top:1px solid var(--border);
+  .app{height:auto;display:block}
+  .layout{grid-template-columns:1fr;padding:10px;gap:10px;overflow:visible;
+    min-height:auto}
+  .col-left,.col-right{overflow:visible;min-height:auto;padding-right:0}
+  .panel.flex-fill{flex:none;min-height:auto}
+  .battle-stage{flex:none;padding:0}
+  .battle-frame{aspect-ratio:auto;height:auto;max-width:100%}
+  .arena{grid-template-columns:1fr;min-height:0}
+  .arena-vs{padding:10px 0;border-top:1px solid var(--border);
     border-bottom:1px solid var(--border)}
-  .side.winner::after{top:auto;bottom:12px}
+  .arena-vs::before,.arena-vs::after{display:none}
+  .side.winner::after{top:auto;bottom:10px}
+  .side-text{-webkit-line-clamp:6}
+  .hero-mini-title{font-size:17px}
+  .hero-mini-stats{margin-left:0;width:100%;justify-content:space-between;
+    padding-top:8px;border-top:1px solid var(--border)}
+  .hero-mini-stats > div{text-align:left}
   .toast-root{left:12px;right:12px;bottom:12px}
   .toast{max-width:none}
-  .topbar{padding:10px 14px}
-  .chip{padding:6px 10px;font-size:11.5px}
+  .topbar{padding:0 12px}
+  .chip{padding:5px 10px;font-size:11px}
+  .battle-tab{width:30px;height:30px;font-size:12px}
+}
+
+@media (max-width:480px){
+  .logo-word{display:none}
+  .hero-eyebrow{font-size:9px}
+  .hero-mini-title{font-size:15px}
 }
 </style>
 </head>
@@ -369,7 +388,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
 
 <!-- BOOT -->
 <div id="boot" class="boot">
-  <div class="brand">
+  <div class="boot-brand">
     <span class="logo-mark">PC</span>
     <span class="logo-word">POST<em>CLASH</em></span>
   </div>
@@ -389,93 +408,81 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
       <div class="chip"><b id="chip-xp">0</b> XP</div>
       <div class="chip" id="chip-wallet" data-action="wallet-toggle">
         <span class="dot" id="chip-dot"></span>
-        <span id="chip-addr">Connect Wallet</span>
+        <span id="chip-addr">Connect</span>
       </div>
     </div>
   </header>
 
   <main class="layout">
 
-    <!-- LEFT COLUMN: ARENA -->
+    <!-- LEFT: HERO STRIP + ARENA -->
     <div class="col-left">
 
-      <section class="hero">
-        <div class="hero-eyebrow"><span class="dot"></span> Live on Solana</div>
-        <h1 class="hero-title">Every post<br />has a <em>rival.</em></h1>
-        <p class="hero-sub">
-          Submit a public X post. Challenge another. The community votes.
-          Winner takes the round.
-        </p>
-        <div class="hero-stats">
-          <div><b id="stat-live">0</b><span>Live battles</span></div>
-          <div><b id="stat-votes">0</b><span>Votes cast</span></div>
+      <div class="hero-strip">
+        <span class="hero-eyebrow"><span class="dot"></span> Live on Solana</span>
+        <div class="hero-mini-title">Every post has a <em>rival.</em></div>
+        <div class="hero-mini-stats">
+          <div><b id="stat-live">0</b><span>Live</span></div>
+          <div><b id="stat-votes">0</b><span>Votes</span></div>
           <div><b id="stat-users">0</b><span>Clashers</span></div>
         </div>
-      </section>
+      </div>
 
-      <section class="panel" style="flex:1;min-height:0;display:flex;flex-direction:column">
+      <section class="panel flex-fill">
         <div class="panel-head">
           <h2>The Arena</h2>
           <span class="count" id="arena-count">0</span>
-          <p>Live rounds</p>
+          <p id="arena-status">Waiting…</p>
         </div>
-        <div id="battles-container" style="overflow-y:auto;flex:1;min-height:0;padding-right:4px"></div>
+        <div class="battle-tabs" id="battle-tabs"></div>
+        <div class="battle-stage" id="battle-stage"></div>
+        <div class="settled-strip" id="settled-strip" hidden></div>
       </section>
 
     </div>
 
-    <!-- RIGHT COLUMN -->
+    <!-- RIGHT: SUBMIT + ADMIN + LEADERBOARD -->
     <div class="col-right">
 
-      <!-- SUBMIT -->
       <section class="panel" id="submit-section">
         <div class="panel-head"><h2>Submit a post</h2></div>
-        <div class="field">
-          <label for="post-url">X post URL</label>
+        <div class="field" style="margin-bottom:8px">
           <input class="input" id="post-url" type="url"
-            placeholder="https://x.com/handle/status/1234…" />
+            placeholder="https://x.com/handle/status/…" />
           <p class="hint" id="url-hint">Paste a public X post link</p>
         </div>
         <div id="preview-area"></div>
         <button class="btn btn-primary btn-block" id="btn-submit" disabled
-          style="margin-top:12px">
-          Connect wallet to submit
+          style="margin-top:10px">
+          Connect wallet
         </button>
       </section>
 
-      <!-- ADMIN -->
       <section class="panel" id="admin-section" hidden>
         <div class="admin-badge">◆ Admin · GKpg…qNJc</div>
-        <div class="panel-head" style="margin-bottom:10px">
+        <div class="panel-head" style="margin-bottom:8px">
           <h2>Control Room</h2>
         </div>
 
-        <p class="hint" style="margin-bottom:10px">Pending approval</p>
+        <p class="hint" style="margin:0 0 4px">Pending</p>
         <div id="pending-list"></div>
 
-        <p class="hint" style="margin-top:16px;margin-bottom:10px">
-          Approved — pick two
-        </p>
+        <p class="hint" style="margin:14px 0 4px">Approved · pick two</p>
         <div id="approved-list"></div>
 
-        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <div style="margin-top:12px;display:flex;gap:6px">
           <button class="btn btn-violet" id="btn-create-battle"
             data-action="create-battle" disabled style="flex:1">
             ⚔ Create Battle
           </button>
-          <button class="btn btn-ghost btn-sm" data-action="clear-picks">
-            Clear
-          </button>
+          <button class="btn btn-ghost btn-sm" data-action="clear-picks">✕</button>
         </div>
-        <p class="hint" id="pick-status" style="margin-top:8px">
-          Pick side A and B.
-        </p>
+        <p class="hint" id="pick-status" style="margin-top:6px">Pick A and B.</p>
       </section>
 
-      <!-- LEADERBOARD -->
       <section class="panel">
         <div class="panel-head"><h2>Leaderboard</h2></div>
-        <div id="leaderboard-list" style="margin:-18px -18px 0 -18px"></div>
+        <div id="leaderboard-list" style="margin:-14px -14px 0 -14px"></div>
       </section>
 
     </div>
@@ -492,7 +499,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
   'use strict';
 
   /* ══════════════════════════════════════════════════════════
-     CONFIG — replace with your real project values
+     CONFIG
      ══════════════════════════════════════════════════════════ */
   const CONFIG = {
     SUPABASE_URL:      'https://ieybzhvjzblbfrtxshwd.supabase.co',
@@ -530,6 +537,8 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     myVotes: LS.get('votes', {}),
     picks: { a: null, b: null },
     profile: null,
+    currentBattleIdx: 0,
+    currentBattleId: null,
   };
 
   /* ── SUPABASE ─────────────────────────────────────────── */
@@ -553,7 +562,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
       el.style.opacity = '0';
       el.style.transform = 'translateX(20px)';
       setTimeout(() => el.remove(), 220);
-    }, 3000);
+    }, 2800);
   }
 
   function modal({ title, body }) {
@@ -664,7 +673,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
         dot.style.background = this.isAdmin() ? 'var(--violet)' : 'var(--accent)';
       } else {
         chip.classList.remove('connected', 'admin');
-        addr.textContent = 'Connect Wallet';
+        addr.textContent = 'Connect';
         dot.style.background = 'var(--dim)';
       }
       xp.textContent = fmt(State.profile?.xp || 0);
@@ -675,7 +684,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
   async function loadBattles() {
     const { data, error } = await State.sb
       .from('battles')
-      .select('id, status, starts_at, ends_at, winner, ' +
+      .select('id, status, starts_at, ends_at, winner, created_at, ' +
               'entry_a:battle_entries!inner(id, side, post:posts(*)), ' +
               'entry_b:battle_entries!inner(id, side, post:posts(*))')
       .in('status', ['scheduled','live','finalized'])
@@ -702,6 +711,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
       return {
         id: b.id, status: b.status,
         starts_at: b.starts_at, ends_at: b.ends_at, winner: b.winner,
+        created_at: b.created_at,
         entry_a: { id: ea?.id, post: ea?.post },
         entry_b: { id: eb?.id, post: eb?.post },
         votes_a: c[ea?.id] || 0,
@@ -714,7 +724,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     const { data } = await State.sb.from('profiles')
       .select('wallet, xp, wins, battles')
       .order('xp', { ascending: false })
-      .limit(20);
+      .limit(10);
     return data || [];
   }
 
@@ -727,7 +737,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     }
   }
 
-  /* ── RENDER ───────────────────────────────────────────── */
+  /* ── RENDER STATS ─────────────────────────────────────── */
   async function renderStats() {
     try {
       const { count: bc } = await State.sb.from('battles')
@@ -744,6 +754,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     } catch (e) { console.warn('[stats]', e); }
   }
 
+  /* ── BATTLE STATUS ────────────────────────────────────── */
   function battleStatusOf(b) {
     const now = Date.now();
     const start = new Date(b.starts_at).getTime();
@@ -755,6 +766,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     return { cls: 'live', label: 'LIVE' };
   }
 
+  /* ── BATTLE CARD ──────────────────────────────────────── */
   function battleCardHTML(b) {
     const st = battleStatusOf(b);
     const total = (b.votes_a + b.votes_b) || 1;
@@ -778,7 +790,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
               ? '<img src="' + esc(post.avatar_url) + '" alt="">'
               : esc((post.author || '?')[0].toUpperCase())) +
           '</div>' +
-          '<div>' +
+          '<div style="min-width:0;flex:1">' +
             '<div class="side-name">' + esc(post.author || 'Unknown') + '</div>' +
             '<div class="side-handle">' + esc(post.handle || '@unknown') + '</div>' +
           '</div>' +
@@ -787,25 +799,22 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
           ? '<img class="side-img" src="' + esc(mainImg) + '" alt="" ' +
             'loading="lazy" onclick="window.open(this.src,\'_blank\')">'
           : '') +
-        '<p class="side-text">' + esc(post.text || 'No preview available.') + '</p>' +
-        (post.url
-          ? '<a class="side-link" href="' + esc(post.url) + '" target="_blank" ' +
-            'rel="noopener">View on X ↗</a>'
-          : '') +
-        '<div class="vote-stats">' +
-          '<span><b>' + fmt(side === 'a' ? b.votes_a : b.votes_b) + '</b> votes</span>' +
-          '<span>' + (side === 'a' ? pctA : pctB) + '%</span>' +
+        '<p class="side-text">' + esc(post.text || 'No preview.') + '</p>' +
+        '<div class="side-vote-stack">' +
+          '<div class="vote-stats">' +
+            '<span><b>' + fmt(side === 'a' ? b.votes_a : b.votes_b) + '</b> votes</span>' +
+            '<span>' + (side === 'a' ? pctA : pctB) + '%</span>' +
+          '</div>' +
+          '<button class="vote-btn ' + cls + ' ' + (voted ? 'voted' : '') + '" ' +
+            'data-vote="' + b.id + '" data-entry="' + (entry?.id || '') + '" ' +
+            (!canVote || voted ? 'disabled' : '') + '>' +
+            (voted ? '✓ Voted' : finished ? 'Closed' : 'Vote') +
+          '</button>' +
         '</div>' +
-        '<button class="vote-btn ' + cls + ' ' + (voted ? 'voted' : '') + '" ' +
-          'data-vote="' + b.id + '" data-entry="' + (entry?.id || '') + '" ' +
-          (!canVote || voted ? 'disabled' : '') + '>' +
-          (voted ? '✓ Voted' : finished ? 'Closed' : 'Vote') +
-        '</button>' +
       '</div>';
     };
 
-    return '<article class="battle ' + (st.cls === 'live' ? 'live' : '') +
-      '" data-battle="' + b.id + '">' +
+    return '<article class="battle ' + (st.cls === 'live' ? 'live' : '') + '">' +
       '<div class="battle-head">' +
         '<span class="status ' + st.cls + '">' + st.label + '</span>' +
         '<span class="battle-timer" data-countdown="' + b.ends_at + '">' +
@@ -822,49 +831,97 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
         sideHTML('b', b.entry_b, 'b') +
       '</div>' +
       '<div class="battle-foot">' +
-        'ID ' + b.id.slice(0, 8) + ' · ' + fmt(total) + ' votes' +
+        'ID ' + b.id.slice(0, 6) + ' · ' + fmt(total) + ' votes' +
         (finished && b.winner
-          ? ' · <span style="color:var(--accent)">WINNER: SIDE ' + b.winner.toUpperCase() + '</span>'
+          ? ' · <span style="color:var(--accent)">WINNER: ' + b.winner.toUpperCase() + '</span>'
           : '') +
       '</div>' +
     '</article>';
   }
 
+  /* ── RENDER BATTLES (tabs + stage + settled strip) ────── */
   function renderBattles() {
     const live = State.battles.filter(b => b.status === 'live');
     const done = State.battles.filter(b => b.status === 'finalized');
 
-    $('#arena-count').textContent = live.length;
-
-    let html = '';
-    if (live.length) {
-      html += live.map(battleCardHTML).join('');
+    // Keep current battle valid
+    if (State.currentBattleId) {
+      const idx = live.findIndex(b => b.id === State.currentBattleId);
+      if (idx >= 0) State.currentBattleIdx = idx;
+      else State.currentBattleIdx = 0;
     } else {
-      html += '<div class="empty">' +
+      State.currentBattleIdx = 0;
+    }
+    if (live.length) {
+      State.currentBattleId = live[State.currentBattleIdx]?.id || null;
+    }
+
+    // Tabs
+    const tabsEl = $('#battle-tabs');
+    if (live.length > 0) {
+      tabsEl.hidden = false;
+      tabsEl.innerHTML = live.map((b, i) =>
+        '<button class="battle-tab ' +
+          (i === State.currentBattleIdx ? 'active' : '') + '" ' +
+          'data-battle-tab="' + i + '">' + (i + 1) +
+        '</button>'
+      ).join('');
+    } else {
+      tabsEl.hidden = true;
+      tabsEl.innerHTML = '';
+    }
+
+    // Stage
+    const stageEl = $('#battle-stage');
+    if (live.length) {
+      const b = live[State.currentBattleIdx];
+      stageEl.innerHTML =
+        '<div class="battle-frame">' + battleCardHTML(b) + '</div>';
+    } else {
+      stageEl.innerHTML = '<div class="empty">' +
         '<div class="ico">◈</div>' +
-        '<h3>No live battles yet</h3>' +
+        '<h3>No live battles</h3>' +
         '<p>' + (Wallet.isAdmin()
-          ? 'Use the Control Room to create a battle.'
-          : 'Check back soon for the next round.') + '</p>' +
+          ? 'Create one from the Control Room →'
+          : 'Check back soon.') + '</p>' +
       '</div>';
     }
 
-    if (done.length) {
-      html += '<h3 style="font-size:11px;margin:22px 0 10px;color:var(--muted);' +
-              'font-family:var(--fm);letter-spacing:.14em;text-transform:uppercase">' +
-              'Settled</h3>';
-      html += done.slice(0, 6).map(battleCardHTML).join('');
-    }
+    // Status
+    $('#arena-count').textContent = live.length;
+    $('#arena-status').textContent = live.length
+      ? (State.currentBattleIdx + 1) + ' of ' + live.length
+      : 'Waiting for round';
 
-    $('#battles-container').innerHTML = html;
+    // Settled strip
+    const strip = $('#settled-strip');
+    if (done.length) {
+      strip.hidden = false;
+      strip.innerHTML =
+        '<span class="hint" style="margin:0;font-size:10px;align-self:center">Recent:</span>' +
+        done.slice(0, 4).map(b => {
+          const aHandle = b.entry_a?.post?.handle || '?';
+          const bHandle = b.entry_b?.post?.handle || '?';
+          const w = b.winner ? b.winner.toUpperCase() : '—';
+          return '<div class="settled-item">' +
+            esc(aHandle) + ' vs ' + esc(bHandle) +
+            ' <span class="badge ' + (b.winner === 'a' ? 'accent' : 'violet') + '">' +
+              w + '</span>' +
+          '</div>';
+        }).join('');
+    } else {
+      strip.hidden = true;
+      strip.innerHTML = '';
+    }
   }
 
+  /* ── SUBMIT BUTTON ────────────────────────────────────── */
   async function renderSubmitButton() {
     const btn = $('#btn-submit');
     if (!btn) return;
     if (!State.wallet) {
       btn.disabled = true;
-      btn.textContent = 'Connect wallet to submit';
+      btn.textContent = 'Connect wallet';
     } else if (!btn.dataset.hasPreview) {
       btn.disabled = true;
       btn.textContent = 'Paste a URL above';
@@ -886,7 +943,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     const el = $('#pending-list');
     const { data } = await State.sb.from('posts')
       .select('*').eq('status', 'pending')
-      .order('created_at', { ascending: false }).limit(20);
+      .order('created_at', { ascending: false }).limit(15);
 
     if (!data || !data.length) {
       el.innerHTML = '<p class="hint" style="margin:0">Nothing pending.</p>';
@@ -899,7 +956,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
           '<div class="row-name">' + esc(p.author || 'Unknown') +
             (p.handle ? ' <span class="badge">' + esc(p.handle) + '</span>' : '') +
           '</div>' +
-          '<div class="row-sub">' + esc((p.text || p.url).slice(0, 60)) + '…</div>' +
+          '<div class="row-sub">' + esc((p.text || p.url).slice(0, 50)) + '…</div>' +
         '</div>' +
         '<button class="btn btn-primary btn-sm" data-approve="' + p.id + '">✓</button>' +
         '<button class="btn btn-danger btn-sm" data-reject="' + p.id + '">✕</button>' +
@@ -910,7 +967,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     const el = $('#approved-list');
     const { data } = await State.sb.from('posts')
       .select('*').eq('status', 'approved')
-      .order('created_at', { ascending: false }).limit(20);
+      .order('created_at', { ascending: false }).limit(15);
 
     if (!data || !data.length) {
       el.innerHTML = '<p class="hint" style="margin:0">No approved posts yet.</p>';
@@ -926,7 +983,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
           '<div class="row-name">' + esc(p.author || 'Unknown') +
             (p.handle ? ' <span class="badge">' + esc(p.handle) + '</span>' : '') +
           '</div>' +
-          '<div class="row-sub">' + esc((p.text || p.url).slice(0, 55)) + '…</div>' +
+          '<div class="row-sub">' + esc((p.text || p.url).slice(0, 45)) + '…</div>' +
         '</div>' +
         '<button class="btn btn-sm ' + (isA ? 'btn-primary' : 'btn-outline') + '" ' +
           'data-pick-a="' + p.id + '">A</button>' +
@@ -944,11 +1001,11 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     const a = State.picks.a, b = State.picks.b;
     if (a && b && a !== b) {
       btn.disabled = false;
-      status.textContent = 'Ready · ' + a.slice(0, 6) + ' vs ' + b.slice(0, 6);
+      status.textContent = 'Ready · ' + a.slice(0, 5) + ' vs ' + b.slice(0, 5);
       status.style.color = 'var(--accent)';
     } else {
       btn.disabled = true;
-      status.textContent = 'Pick side A and side B.';
+      status.textContent = 'Pick A and B.';
       status.style.color = '';
     }
   }
@@ -959,10 +1016,9 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     const el = $('#leaderboard-list');
 
     if (!rows.length) {
-      el.innerHTML = '<div class="empty" style="border:none;border-radius:0">' +
-        '<div class="ico">▲</div>' +
-        '<h3>No players yet</h3>' +
-        '<p>Vote in a battle to earn XP.</p>' +
+      el.innerHTML = '<div style="padding:24px 14px;text-align:center;' +
+        'color:var(--muted);font-family:var(--fm);font-size:11px">' +
+        'No players yet · vote to earn XP' +
       '</div>';
       return;
     }
@@ -973,7 +1029,8 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
         '<div class="leader-main">' +
           '<div class="leader-wallet">' +
             esc(short(r.wallet)) +
-            (r.wallet === ADMIN_WALLET ? ' <span class="badge violet">ADMIN</span>' : '') +
+            (r.wallet === ADMIN_WALLET
+              ? ' <span class="badge violet">ADMIN</span>' : '') +
           '</div>' +
           '<div class="leader-sub">' + (r.battles || 0) + ' battles · ' +
             (r.wins || 0) + ' wins</div>' +
@@ -982,7 +1039,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
       '</div>').join('');
   }
 
-  /* ── POST PREVIEW ─────────────────────────────────────── */
+  /* ── PREVIEW ──────────────────────────────────────────── */
   async function fetchPostPreview(url) {
     try {
       const m = url.match(/(?:x|twitter)\.com\/([^\/]+)\/status\/(\d+)/);
@@ -1024,9 +1081,9 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
       target.innerHTML =
         '<div class="preview" style="border-color:rgba(255,176,32,.35);' +
         'background:rgba(255,176,32,.04)">' +
-        '<div style="color:var(--warn);font-weight:600;font-size:12.5px">' +
+        '<div style="color:var(--warn);font-weight:600;font-size:11.5px">' +
         '⚠ Preview unavailable</div>' +
-        '<div style="color:var(--dim);font-family:var(--fm);font-size:11px">' +
+        '<div style="color:var(--dim);font-family:var(--fm);font-size:10px">' +
         esc(data?.error || 'Network error') + '</div>' +
         '</div>';
       return;
@@ -1037,7 +1094,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     if (imgs.length) {
       const cls = imgs.length === 1 ? 'one' : 'two';
       imgsHtml = '<div class="preview-imgs ' + cls + '">' +
-        imgs.slice(0, 4).map(src =>
+        imgs.slice(0, 2).map(src =>
           '<img src="' + esc(src) + '" alt="" loading="lazy" ' +
           'onclick="window.open(this.src,\'_blank\')">'
         ).join('') + '</div>';
@@ -1051,7 +1108,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
               ? '<img src="' + esc(data.avatar_url) + '" alt="">'
               : esc((data.author || '?')[0].toUpperCase())) +
           '</div>' +
-          '<div>' +
+          '<div style="min-width:0">' +
             '<div class="preview-name">' + esc(data.author) + '</div>' +
             '<div class="preview-handle">' + esc(data.handle) + '</div>' +
           '</div>' +
@@ -1083,7 +1140,6 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
 
     toast(Wallet.isAdmin() ? 'Auto-approved' : 'Awaiting approval');
 
-    // Immediately refresh admin lists
     if (Wallet.isAdmin()) await Promise.all([renderPending(), renderApproved()]);
 
     return true;
@@ -1148,8 +1204,9 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
 
     if (eErr) { toast('Entries failed: ' + eErr.message, 'err'); return; }
 
-    toast('Battle live · 60 minutes', 'violet');
+    toast('Battle live · 60 min', 'violet');
     State.picks = { a: null, b: null };
+    State.currentBattleId = battle.id;
     await renderApproved();
     await refresh();
   }
@@ -1166,7 +1223,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
   document.addEventListener('click', async e => {
     const t = e.target.closest(
       '[data-action],[data-vote],[data-approve],[data-reject],' +
-      '[data-pick-a],[data-pick-b]'
+      '[data-pick-a],[data-pick-b],[data-battle-tab]'
     );
     if (!t) return;
 
@@ -1190,6 +1247,14 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
     if (action === 'clear-picks') {
       State.picks = { a: null, b: null };
       await renderApproved();
+      return;
+    }
+
+    if (t.dataset.battleTab !== undefined) {
+      State.currentBattleIdx = parseInt(t.dataset.battleTab, 10);
+      const live = State.battles.filter(b => b.status === 'live');
+      State.currentBattleId = live[State.currentBattleIdx]?.id || null;
+      renderBattles();
       return;
     }
 
@@ -1252,7 +1317,7 @@ body > div.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh}
       lastUrl = url;
 
       previewArea.innerHTML = '<div class="preview">' +
-        '<div style="color:var(--muted);font-family:var(--fm);font-size:12px">' +
+        '<div style="color:var(--muted);font-family:var(--fm);font-size:11px">' +
         'Loading preview…</div></div>';
 
       const data = await fetchPostPreview(url);
