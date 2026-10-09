@@ -719,43 +719,189 @@ code{font-family:var(--fm);font-size:12.5px}
         : '');
   }
 
-  async function viewDiscover() {
-    const canSubmit = State.wallet && State.wallet.verified;
-    $('#view').innerHTML =
-      '<div class="view-head"><h1>Discover</h1><p>Paste a public X post URL to enter it into an upcoming round.</p></div>' +
-      '<div class="panel" style="margin-bottom:18px">' +
-        '<h3>Submit a post</h3>' +
-        '<div class="field"><label for="post-url">X post URL</label>' +
-          '<input class="input" id="post-url" type="url" placeholder="https://x.com/handle/status/1234567890" />' +
-          '<p class="hint" id="url-hint">Format: https://x.com/&lt;handle&gt;/status/&lt;id&gt;</p>' +
+  async function fetchPostPreview(url) {
+  try {
+    const r = await fetch('https://noembed.com/embed?url=' + encodeURIComponent(url));
+    if (!r.ok) throw new Error('Preview service unavailable');
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+
+    // Extract handle from author_url
+    const handle = d.author_url ? '@' + d.author_url.split('/').filter(Boolean).pop() : '@unknown';
+
+    // Strip the blockquote wrapper to get plain text
+    let text = d.title || '';
+    if (d.html) {
+      const m = d.html.match(/<p[^>]*>([\s\S]*?)<\/p>/);
+      if (m) {
+        text = m[1].replace(/<[^>]+>/g, '').replace(/&mdash;/g, '—').replace(/&amp;/g, '&').trim();
+      }
+    }
+
+    return {
+      author: d.author_name || 'Unknown',
+      handle,
+      text,
+      url,
+      avatar_url: '',
+    };
+  } catch (e) {
+    console.warn('[Preview]', e.message);
+    return null;
+  }
+}
+
+async function viewDiscover() {
+  const canSubmit = State.wallet && State.wallet.verified;
+
+  $('#view').innerHTML =
+    '<div class="view-head"><h1>Discover</h1><p>Paste a public X post URL to enter it into an upcoming round.</p></div>' +
+    '<div class="panel" style="margin-bottom:18px">' +
+      '<h3>Submit a post</h3>' +
+      '<div class="field">' +
+        '<label for="post-url">X post URL</label>' +
+        '<input class="input" id="post-url" type="url" placeholder="https://x.com/handle/status/1234567890" />' +
+        '<p class="hint" id="url-hint">Format: https://x.com/&lt;handle&gt;/status/&lt;id&gt;</p>' +
+      '</div>' +
+      '<div id="preview-area"></div>' +
+      '<button class="btn btn-primary" id="btn-submit-post" disabled style="margin-top:14px">' +
+        (canSubmit ? 'Loading preview…' : 'Connect wallet first') +
+      '</button>' +
+    '</div>' +
+    '<div class="panel"><h3>Your submissions</h3>' +
+      '<div id="my-posts"><div class="empty" style="padding:30px"><p style="margin:0">Loading…</p></div></div>' +
+    '</div>';
+
+  const inp = $('#post-url');
+  const preview = $('#preview-area');
+  const submitBtn = $('#btn-submit-post');
+  let pendingPreview = null;
+  let previewUrl = null;
+
+  if (!canSubmit) return;
+
+  async function handleInput() {
+    const url = inp.value.trim();
+    const valid = /^https?:\/\/(www\.)?(x|twitter)\.com\/[A-Za-z0-9_]+\/status\/\d+/.test(url);
+
+    inp.classList.toggle('err', url.length > 0 && !valid);
+    $('#url-hint').className = 'hint' + (url.length > 0 && !valid ? ' err' : '');
+    $('#url-hint').textContent = url.length > 0 && !valid
+      ? 'Not a valid X post URL'
+      : 'Format: https://x.com/<handle>/status/<id>';
+
+    preview.innerHTML = '';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Loading preview…';
+    pendingPreview = null;
+    previewUrl = null;
+
+    if (!valid) {
+      submitBtn.textContent = 'Submit post';
+      return;
+    }
+    if (url === previewUrl) return;
+    previewUrl = url;
+
+    preview.innerHTML =
+      '<div style="padding:16px;border:1px solid var(--border);border-radius:8px;' +
+      'background:var(--panel-2);color:var(--muted);font-size:13px">' +
+      'Loading preview…</div>';
+
+    const data = await fetchPostPreview(url);
+    if (previewUrl !== url) return; // user typed something else
+
+    if (!data) {
+      preview.innerHTML =
+        '<div style="padding:16px;border:1px solid rgba(255,176,32,.35);border-radius:8px;' +
+        'background:rgba(255,176,32,.06);color:var(--warn);font-size:13px">' +
+        '⚠ Preview unavailable. You can still submit — the URL will be validated server-side.</div>';
+      pendingPreview = { url, author: null, handle: null, text: null };
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit without preview';
+      return;
+    }
+
+    pendingPreview = data;
+
+    // Render the preview card
+    preview.innerHTML =
+      '<div style="border:1px solid var(--border);border-radius:8px;background:var(--panel-2);' +
+      'padding:16px;display:flex;flex-direction:column;gap:12px">' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<div style="width:36px;height:36px;border-radius:50%;background:var(--panel-3);' +
+          'display:grid;place-content:center;font-weight:600;font-size:13px;color:var(--muted);' +
+          'border:1px solid var(--border)">' + esc((data.author || '?')[0]) + '</div>' +
+          '<div>' +
+            '<div style="font-weight:600;font-size:13.5px">' + esc(data.author) + '</div>' +
+            '<div style="font-size:12px;color:var(--dim);font-family:var(--fm)">' + esc(data.handle) + '</div>' +
+          '</div>' +
         '</div>' +
-        '<button class="btn btn-primary" id="btn-submit-post" ' + (canSubmit ? '' : 'disabled') + '>' +
-          (canSubmit ? 'Submit post' : 'Connect wallet first') +
-        '</button>' +
+        '<p style="font-size:14px;line-height:1.5;color:var(--text)">' + esc(data.text || '') + '</p>' +
+        '<a href="' + esc(data.url) + '" target="_blank" rel="noopener" ' +
+        'style="font-size:11.5px;color:var(--dim);font-family:var(--fm)">View on X ↗</a>' +
       '</div>';
 
-    const inp = $('#post-url');
-    if (inp) inp.addEventListener('input', () => {
-      const ok = /^https?:\/\/(www\.)?(x|twitter)\.com\/[A-Za-z0-9_]+\/status\/\d+/.test(inp.value.trim());
-      inp.classList.toggle('err', inp.value.length > 0 && !ok);
-      $('#url-hint').className = 'hint' + (inp.value.length > 0 && !ok ? ' err' : '');
-      $('#url-hint').textContent = inp.value.length > 0 && !ok
-        ? 'Not a valid X post URL' : 'Format: https://x.com/<handle>/status/<id>';
-      $('#btn-submit-post').disabled = !ok || !canSubmit;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit post';
+  }
+
+  inp.addEventListener('input', handleInput);
+
+  submitBtn.onclick = async () => {
+    if (!pendingPreview) return;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    const { error } = await State.sb.from('posts').insert({
+      url: pendingPreview.url,
+      author: pendingPreview.author,
+      handle: pendingPreview.handle,
+      text: pendingPreview.text,
+      status: 'pending',
     });
 
-    $('#btn-submit-post') && ($('#btn-submit-post').onclick = async () => {
-      const url = inp.value.trim();
-      const { error } = await State.sb.from('posts').insert({ url, status: 'pending' });
-      if (error) {
-        toast(error.code === '23505' ? 'Already submitted' : 'Failed: ' + error.message,
-              error.code === '23505' ? 'warn' : 'err');
-        return;
-      }
-      toast('Post submitted');
-      inp.value = '';
-    });
+    if (error) {
+      if (error.code === '23505') toast('This post was already submitted', 'warn');
+      else if (error.code === '42501') toast('Permission denied — check RLS policy on posts', 'err');
+      else toast('Failed: ' + error.message, 'err');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit post';
+      return;
+    }
+
+    toast('Post submitted — awaiting round assignment');
+    inp.value = '';
+    preview.innerHTML = '';
+    submitBtn.textContent = 'Loading preview…';
+    submitBtn.disabled = true;
+    loadMyPosts();
+  };
+
+  loadMyPosts();
+}
+
+async function loadMyPosts() {
+  const el = $('#my-posts');
+  if (!el) return;
+  const { data: { user } } = await State.sb.auth.getUser();
+  if (!user) {
+    el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">Connect a wallet to see your submissions.</p></div>';
+    return;
   }
+  const { data } = await State.sb.from('posts').select('*').eq('user_id', user.id)
+    .order('created_at', { ascending: false }).limit(20);
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="empty" style="padding:30px"><p style="margin:0">No submissions yet.</p></div>';
+    return;
+  }
+  el.innerHTML = data.map(p =>
+    '<div class="row"><div class="row-rank">◇</div><div class="row-main">' +
+    '<div class="row-name">' + esc(p.author || 'Pending review') +
+      ' <span class="badge">' + esc(p.status) + '</span></div>' +
+    '<div class="row-sub">' + esc((p.text || p.url).slice(0, 70)) + '…</div>' +
+    '</div></div>').join('');
+}
 
   async function viewLeaderboard() {
     const rows = await loadLeaderboard();
